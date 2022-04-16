@@ -279,6 +279,17 @@ class AFD {
         }
         return true;
     }
+    void reset() {
+        initialState = -1;
+        transitions.clear();
+        states.clear();
+        alphabet.clear();
+        finalStates.clear();
+    }
+    template <typename T>
+    void Try(T input) {
+        cout << "Le mot " << input << " : \n" << (accept(input) ? "accepte" : "refuse") << endl;
+    }
 };
 
 AFD read(const string file_name) {
@@ -287,6 +298,7 @@ AFD read(const string file_name) {
     if (!file.is_open()) {
         cout << "Erreur lors de l'ouverture du fichier." << endl;
         afd.setInitialState(-1);
+        getch();
         exit(1);
     }
     else {
@@ -343,4 +355,10 @@ AFD read(const string file_name) {
     }
     file.close();
     return afd;
+};
+
+void print_protocol() {
+    cout << "Dans le fichier txt. Vous devez saisir en respectant ce protocol : \n" << "Etat Initial => I,\n" <<"transition => t,\n" << "liste d'etats => E,\n" << "liste d'etats finaux => F,\n" << "l'alphabet => A,\n";
+    cout << "--------------------------------------------------------------------------------" << endl;
+    cout << "Veuillez entrer le nom du fichier a utiliser : ";
 };
