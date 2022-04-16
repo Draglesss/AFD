@@ -1,5 +1,6 @@
 #include "AFD.hpp"
 using namespace std;
+using namespace AFD_fx;
 
 int main() {
     string input;
@@ -7,7 +8,7 @@ int main() {
     string fileName;
     cin >> fileName;
     AFD afd(read(fileName));
-    if(!afd.mechanic()) 
+    if(!afd.mechanic())
         return 0;
     afd.print();
     string mot = "abba";

@@ -11,7 +11,8 @@ using namespace std;
 //* a transition is composed of a state,
 //* a symbol
 //* and a next state
-int size(const char* in) {
+template <typename T> 
+int size(T in) {
     return sizeof(in) / sizeof(in[0]);
 };
 class transition {
@@ -210,7 +211,7 @@ class AFD {
         printTransitions();
         cout << "--------------------------" << endl;
     }
-    bool accept(const char* input){
+    bool accept(const char* input) const {
         int currentState = initialState;
         for (int i = 0; i < size(input); i++) {
             for (int j = 0; j < transitions.size(); j++) {
@@ -231,7 +232,7 @@ class AFD {
         }
         return false;
     }
-    bool accept(string input) {
+    bool accept(string input) const{
        int currentState = initialState;
         for (int i = 0; i < input.size(); i++) {
             if(!isValidInput(input[i])) {
@@ -287,78 +288,80 @@ class AFD {
         finalStates.clear();
     }
     template <typename T>
-    void Try(T input) {
+    void Try(T input)  const {
         cout << "Le mot " << input << " : \n" << (accept(input) ? "accepte" : "refuse") << endl;
     }
 };
-
-AFD read(const string file_name) {
-    AFD afd;
-    ifstream file(file_name);
-    if (!file.is_open()) {
-        cout << "Erreur lors de l'ouverture du fichier." << endl;
-        afd.setInitialState(-1);
-        getch();
-        exit(1);
-    }
-    else {
-        cout << "Fichier ouvert avec succes." << endl;
-    }
-    string line;
-    int state;
-    char symbol, id;
-    int nextState;
-    vector<char> alphabet;
-    transition t;
-    while (getline(file, line)) {
-        switch (line[0])
-        {
-        case 'I' :
-            if(line.size() != 3) {
-                cout << "Erreur de syntax : l'etat initial." << endl;
+namespace AFD_fx {
+    template <typename T>
+    AFD read(const T file_name) {
+        AFD afd;
+        ifstream file(file_name);
+        if (!file.is_open()) {
+            cout << "Erreur lors de l'ouverture du fichier." << endl;
+            afd.setInitialState(-1);
+            getch();
+            exit(1);
+        }
+        else {
+            cout << "Fichier ouvert avec succes." << endl;
+        }
+        string line;
+        int state;
+        char symbol, id;
+        int nextState;
+        vector<char> alphabet;
+        transition t;
+        while (getline(file, line)) {
+            switch (line[0])
+            {
+            case 'I' :
+                if(line.size() != 3) {
+                    cout << "Erreur de syntax : l'etat initial." << endl;
+                    return afd;
+                }
+                state = stoi(line.substr(2, line.size() - 2));
+                afd.setInitialState(state);
+                break;
+            case 'A' :
+                for(int i = 2; i < line.size(); i = i + 2) {
+                    alphabet.push_back(line[i]);
+                }
+                afd.addAlphabet(alphabet);
+                break;
+            case 'F' :
+                for(int i = 2; i < line.size(); i=i+2) {
+                        state = stoi(line.substr(i, 1));
+                        afd.addFinalState(state);
+                }
+                break;
+            case 'E' :
+                for(int i = 2; i < line.size(); i=i+2) {
+                        state = stoi(line.substr(i, 1));
+                        afd.addState(state);
+                    }
+                break;
+            case 't' :
+                state = stoi(line.substr(2, 1));
+                symbol = line[4];
+                nextState = stoi(line.substr(6, 1));
+                t.setState(state);
+                t.setSymbol(symbol);
+                t.setNextState(nextState);
+                afd.addTransition(t);
+                break;
+            default:
+                cout << "Erreur de syntax : ligne non reconnue." << endl;
                 return afd;
             }
-            state = stoi(line.substr(2, line.size() - 2));
-            afd.setInitialState(state);
-            break;
-        case 'A' :
-            for(int i = 2; i < line.size(); i = i + 2) {
-                alphabet.push_back(line[i]);
-            }
-            afd.addAlphabet(alphabet);
-            break;
-        case 'F' :
-            for(int i = 2; i < line.size(); i=i+2) {
-                    state = stoi(line.substr(i, 1));
-                    afd.addFinalState(state);
-            }
-            break;
-        case 'E' :
-            for(int i = 2; i < line.size(); i=i+2) {
-                    state = stoi(line.substr(i, 1));
-                    afd.addState(state);
-                }
-            break;
-        case 't' :
-            state = stoi(line.substr(2, 1));
-            symbol = line[4];
-            nextState = stoi(line.substr(6, 1));
-            t.setState(state);
-            t.setSymbol(symbol);
-            t.setNextState(nextState);
-            afd.addTransition(t);
-            break;
-        default:
-            cout << "Erreur de syntax : ligne non reconnue." << endl;
-            return afd;
         }
-    }
-    file.close();
-    return afd;
-};
+        file.close();
+        return afd;
+    };
 
-void print_protocol() {
-    cout << "Dans le fichier txt. Vous devez saisir en respectant ce protocol : \n" << "Etat Initial => I,\n" <<"transition => t,\n" << "liste d'etats => E,\n" << "liste d'etats finaux => F,\n" << "l'alphabet => A,\n";
-    cout << "--------------------------------------------------------------------------------" << endl;
-    cout << "Veuillez entrer le nom du fichier a utiliser : ";
-};
+    void print_protocol() {
+        cout << "Dans le fichier txt. Vous devez saisir en respectant ce protocol : \n" << "Etat Initial => I,\n" <<"transition => t,\n" << "liste d'etats => E,\n" << "liste d'etats finaux => F,\n" << "l'alphabet => A,\n";
+        cout << "--------------------------------------------------------------------------------" << endl;
+        cout << "Veuillez entrer le nom du fichier a utiliser : ";
+    };
+}
