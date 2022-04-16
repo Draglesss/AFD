@@ -214,8 +214,16 @@ class AFD {
         int currentState = initialState;
         for (int i = 0; i < size(input); i++) {
             for (int j = 0; j < transitions.size(); j++) {
-                if (transitions[j].getSymbol() == input[i] and transitions[j].getState() == currentState) 
+                if (transitions[j].getSymbol() == input[i] and transitions[j].getState() == currentState) {
+                        cout << "(" << currentState << ") -- " << input[i] << " --> ";
+                        if (isFinalState(transitions[j].getNextState())) {
+                            cout << "((" << transitions[j].getNextState() << "))" << endl;
+                        } else {
+                            cout << transitions[j].getNextState() << endl;
+                        }
                         currentState = transitions[j].getNextState();
+                        break;
+                }
             }
         }
         if(isFinalState(currentState)) {
