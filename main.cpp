@@ -4,7 +4,7 @@ using namespace AFD_fx;
 
 int main() {
     string input;
-    print_protocol();
+    printProtocol();
     string fileName;
     cin >> fileName;
     AFD afd(read(fileName));

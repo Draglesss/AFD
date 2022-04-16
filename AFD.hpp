@@ -1,11 +1,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <queue>
 #include <fstream>
 #include <conio.h>
 #include <cassert>
-#include <string.h>
 #pragma once
 using namespace std;
 //* a transition is composed of a state,
@@ -256,25 +254,25 @@ class AFD {
         }
         return false;
     }
-    bool isempty() const {
+    bool isEmpty() const {
         return transitions.empty() and states.empty() and alphabet.empty() and finalStates.empty();
     }
-    bool notenough() const {
+    bool isNotEnough() const {
         return initialState == -2 or transitions.empty() or states.empty() or alphabet.empty() or finalStates.empty();
     }
-    bool iscorrupted() const {
+    bool isCorrupted() const {
         return initialState == -1;
     }
     bool mechanic() const {
-        if (this->iscorrupted()) {
+        if (this->isCorrupted()) {
             cout << "ERROR : syntax error" << endl;
             return false;
         }
-        else if (this->isempty()) {
+        else if (this->isEmpty()) {
             cout << "ERROR : Le fichier est vide." << endl;
             return false;
         }
-        else if (this->notenough()) {
+        else if (this->isNotEnough()) {
             cout << "ERROR : Il manque des informations." << endl;
             return false;
         }
@@ -289,7 +287,7 @@ class AFD {
     }
     template <typename T>
     void Try(T input)  const {
-        cout << "Le mot " << input << " : \n" << (accept(input) ? "accepte" : "refuse") << endl;
+        cout << "Le mot " << input << " : \n" << (accept(input) ? "=> accepte" : "=> refuse") << endl;
     }
 };
 namespace AFD_fx {
@@ -358,10 +356,15 @@ namespace AFD_fx {
         file.close();
         return afd;
     };
-
-    void print_protocol() {
-        cout << "Dans le fichier txt. Vous devez saisir en respectant ce protocol : \n" << "Etat Initial => I,\n" <<"transition => t,\n" << "liste d'etats => E,\n" << "liste d'etats finaux => F,\n" << "l'alphabet => A,\n";
+    void printSpacing() {
         cout << "--------------------------------------------------------------------------------" << endl;
+    }
+    void printProtocol() {
+        printSpacing();
+        cout << "Dans le fichier txt. Vous devez saisir en respectant ce protocol : \n";
+        printSpacing();
+        cout << "Etat Initial => I,\n" <<"Transition => t,\n" << "Liste des Etats => E,\n" << "Liste d'etats finaux => F,\n" << "L'alphabet => A,\n";
+        printSpacing();
         cout << "Veuillez entrer le nom du fichier a utiliser : ";
     };
 }
