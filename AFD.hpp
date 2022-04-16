@@ -63,7 +63,7 @@ class AFD {
     vector<char> alphabet;
     vector<int> finalStates;
     vector<int> states;
-    public:
+public:
     AFD() {
         initialState = -2;
     }
@@ -230,7 +230,7 @@ class AFD {
         }
         return false;
     }
-    bool accept(string input) const{
+    bool accept(const string& input) const {
        int currentState = initialState;
         for (int i = 0; i < input.size(); i++) {
             if(!isValidInput(input[i])) {
@@ -292,7 +292,7 @@ class AFD {
 };
 namespace AFD_fx {
     template <typename T>
-    AFD read(const T file_name) {
+    AFD read(const T& file_name) {
         AFD afd;
         ifstream file(file_name);
         if (!file.is_open()) {
