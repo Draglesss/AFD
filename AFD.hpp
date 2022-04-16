@@ -355,7 +355,7 @@ namespace AFD_fx {
         }
         file.close();
         return afd;
-    };
+    }
     void printSpacing() {
         cout << "--------------------------------------------------------------------------------" << endl;
     }
@@ -366,5 +366,5 @@ namespace AFD_fx {
         cout << "Etat Initial => I,\n" <<"Transition => t,\n" << "Liste des Etats => E,\n" << "Liste d'etats finaux => F,\n" << "L'alphabet => A,\n";
         printSpacing();
         cout << "Veuillez entrer le nom du fichier a utiliser : ";
-    };
+    }
 }
