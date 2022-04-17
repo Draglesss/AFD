@@ -7,7 +7,7 @@ int main() {
     printProtocol();
     string fileName;
     cin >> fileName;
-    AFD afd(read(fileName));
+    const AFD afd(read(fileName));
     if(!afd.checkHealth())
         return 0;
     afd.print();

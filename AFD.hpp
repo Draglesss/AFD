@@ -324,7 +324,7 @@ namespace AFD_fx {
                 }else if (isalpha(line[2])) {
                             afd.setInitialState(-1);
                             return afd;
-                        }
+                }
                 state = stoi(line.substr(2, line.size() - 2));
                 afd.setInitialState(state);
                 break;
@@ -356,7 +356,7 @@ namespace AFD_fx {
                         }
                         state = stoi(line.substr(i, 1));
                         afd.addState(state);
-                    }
+                }
                 break;
             case 't' :
                 state = stoi(line.substr(2, 1));
@@ -379,11 +379,12 @@ namespace AFD_fx {
         cout << "--------------------------------------------------------------------------------" << endl;
     }
     void printProtocol() {
-        AFD_fx::printSpacing();
+        using namespace AFD_fx;
+        printSpacing();
         cout << "Dans le fichier txt. Vous devez saisir en respectant ce protocol : \n";
-        AFD_fx::printSpacing();
+        printSpacing();
         cout << "Etat Initial => I,\n" <<"Transition => t,\n" << "Liste des Etats => E,\n" << "Liste d'etats finaux => F,\n" << "L'alphabet => A,\n";
-        AFD_fx::printSpacing();
+        printSpacing();
         cout << "Veuillez entrer le nom du fichier a utiliser : ";
     }
 }
