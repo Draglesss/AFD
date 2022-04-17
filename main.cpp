@@ -8,7 +8,7 @@ int main() {
     string fileName;
     cin >> fileName;
     AFD afd(read(fileName));
-    if(!afd.mechanic())
+    if(!afd.checkHealth())
         return 0;
     afd.print();
     string mot = "abba";

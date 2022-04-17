@@ -13,6 +13,7 @@ template <typename T>
 int size(T in) {
     return sizeof(in) / sizeof(in[0]);
 };
+void printSpacing();
 class transition {
     int state;
     char symbol;
@@ -263,9 +264,9 @@ public:
     bool isCorrupted() const {
         return initialState == -1;
     }
-    bool mechanic() const {
+    bool checkHealth() const {
         if (this->isCorrupted()) {
-            cout << "ERROR : syntax error" << endl;
+            cout << "ERROR : Syntax error" << endl;
             return false;
         }
         else if (this->isEmpty()) {
@@ -278,15 +279,17 @@ public:
         }
         return true;
     }
-    void reset() {
-        initialState = -1;
+    AFD reset() {
+        initialState = -2;
         transitions.clear();
         states.clear();
         alphabet.clear();
         finalStates.clear();
+        return *this;
     }
     template <typename T>
     void Try(T input)  const {
+        printSpacing();
         cout << "Le mot " << input << " : \n" << (accept(input) ? "=> accepte" : "=> refuse") << endl;
     }
 };
@@ -316,25 +319,41 @@ namespace AFD_fx {
             case 'I' :
                 if(line.size() != 3) {
                     cout << "Erreur de syntax : l'etat initial." << endl;
+                    afd.setInitialState(-1);
                     return afd;
-                }
+                }else if (isalpha(line[2])) {
+                            afd.setInitialState(-1);
+                            return afd;
+                        }
                 state = stoi(line.substr(2, line.size() - 2));
                 afd.setInitialState(state);
                 break;
             case 'A' :
                 for(int i = 2; i < line.size(); i = i + 2) {
+                    if (!isalpha(line[i])) {
+                            afd.setInitialState(-1);
+                            return afd;
+                        }
                     alphabet.push_back(line[i]);
                 }
                 afd.addAlphabet(alphabet);
                 break;
             case 'F' :
                 for(int i = 2; i < line.size(); i=i+2) {
+                        if (isalpha(line[i])) {
+                            afd.setInitialState(-1);
+                            return afd;
+                        }
                         state = stoi(line.substr(i, 1));
                         afd.addFinalState(state);
                 }
                 break;
             case 'E' :
                 for(int i = 2; i < line.size(); i=i+2) {
+                        if (isalpha(line[i])) {
+                            afd.setInitialState(-1);
+                            return afd;
+                        }
                         state = stoi(line.substr(i, 1));
                         afd.addState(state);
                     }
@@ -360,11 +379,14 @@ namespace AFD_fx {
         cout << "--------------------------------------------------------------------------------" << endl;
     }
     void printProtocol() {
-        printSpacing();
+        AFD_fx::printSpacing();
         cout << "Dans le fichier txt. Vous devez saisir en respectant ce protocol : \n";
-        printSpacing();
+        AFD_fx::printSpacing();
         cout << "Etat Initial => I,\n" <<"Transition => t,\n" << "Liste des Etats => E,\n" << "Liste d'etats finaux => F,\n" << "L'alphabet => A,\n";
-        printSpacing();
+        AFD_fx::printSpacing();
         cout << "Veuillez entrer le nom du fichier a utiliser : ";
     }
+}
+void printSpacing() {
+    AFD_fx::printSpacing();
 }
