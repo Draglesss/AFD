@@ -3,7 +3,6 @@ using namespace std;
 using namespace AFD_fx;
 
 int main() {
-    string input;
     printProtocol();
     string fileName;
     cin >> fileName;
@@ -18,13 +17,11 @@ int main() {
     mot = "bababa";
     afd.Try(mot);
     afd.Try("abbbbbbbbababbb");
-    while (true) {
-        cout << "Entrez un mot a tester : ";
-        cin >> input;
-        if(input == "exit")
-            break;
-        afd.Try(input);
-    }
+    cout << mirror(mot) << endl;
+    printSize(mot);
+    mot = "abba";
+    cout << "Le mot " << mot << " est " << (AFD_fx::isPalindrome(mot) ? "" : "pas ") << "un palindrome" << endl;
+    afd.inputFromUser();
     getch();
     return 0;
 }

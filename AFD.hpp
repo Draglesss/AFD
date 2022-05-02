@@ -4,6 +4,9 @@
 #include <fstream>
 #include <conio.h>
 #include <cassert>
+#include <cstdlib>
+#include <cstdio>
+#include <algorithm>
 #pragma once
 using namespace std;
 //* a transition is composed of a state,
@@ -64,7 +67,7 @@ class AFD {
     vector<char> alphabet;
     vector<int> finalStates;
     vector<int> states;
-public:
+    public :
     AFD() {
         initialState = -2;
     }
@@ -74,6 +77,12 @@ public:
         this->alphabet = afd.alphabet;
         this->finalStates = afd.finalStates;
         this->states = afd.states;
+    }
+    ~AFD() {
+        transitions.clear();
+        alphabet.clear();
+        finalStates.clear();
+        states.clear();
     }
     bool isFinalState(int state) const {
         for (int i = 0; i < finalStates.size(); i++) {
@@ -165,7 +174,7 @@ public:
             if (i != alphabet.size() - 1) {
                 cout << ", ";
             }
-            if(i == alphabet.size() - 1) {
+            if (i == alphabet.size() - 1) {
                 cout << "}" << endl;
             }
         }
@@ -213,6 +222,9 @@ public:
     bool accept(const char* input) const {
         int currentState = initialState;
         for (int i = 0; i < size(input); i++) {
+            if(!isValidInput(input[i])) {
+                return false;
+            }
             for (int j = 0; j < transitions.size(); j++) {
                 if (transitions[j].getSymbol() == input[i] and transitions[j].getState() == currentState) {
                         cout << "(" << currentState << ") -- " << input[i] << " --> ";
@@ -288,9 +300,27 @@ public:
         return *this;
     }
     template <typename T>
-    void Try(T input)  const {
+    void Try(const T& input)  const {
         printSpacing();
         cout << "Le mot " << input << " : \n" << (accept(input) ? "=> accepte" : "=> refuse") << endl;
+    }
+    bool isValid(const string input) const {
+        for (int i = 0; i < input.size(); i++) {
+            if(!isValidInput(input[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    void inputFromUser() const {
+        string input;
+        while (true) {
+            cout << "Entrez un mot a tester : ";
+            cin >> input;
+            if(input == "exit")
+                break;
+            Try(input);
+        }
     }
 };
 namespace AFD_fx {
@@ -314,8 +344,7 @@ namespace AFD_fx {
         vector<char> alphabet;
         transition t;
         while (getline(file, line)) {
-            switch (line[0])
-            {
+            switch (line[0]) {
             case 'I' :
                 if(line.size() != 3) {
                     cout << "Erreur de syntax : l'etat initial." << endl;
@@ -362,12 +391,10 @@ namespace AFD_fx {
                 state = stoi(line.substr(2, 1));
                 symbol = line[4];
                 nextState = stoi(line.substr(6, 1));
-                t.setState(state);
-                t.setSymbol(symbol);
-                t.setNextState(nextState);
+                t = transition(state, symbol, nextState);
                 afd.addTransition(t);
                 break;
-            default:
+            default :
                 cout << "Erreur de syntax : ligne non reconnue." << endl;
                 return afd;
             }
@@ -386,6 +413,41 @@ namespace AFD_fx {
         cout << "Etat Initial => I,\n" <<"Transition => t,\n" << "Liste des Etats => E,\n" << "Liste d'etats finaux => F,\n" << "L'alphabet => A,\n";
         printSpacing();
         cout << "Veuillez entrer le nom du fichier a utiliser : ";
+    }
+    string mirror(const string& input) {
+        string output;
+        for (int i = input.size() - 1; i >= 0; i--) {
+            output += input[i];
+        }
+        return output;
+    }
+    string mirror(const char* input) {
+        string output;
+        for (int i = size(input); i >= 0; i--) {
+            output += input[i];
+        }
+        return output;
+    }
+    int size(const char* input) {
+        int i = 0;
+        while (input[i] != '\0') {
+            i++;
+        }
+        return i;
+    }
+    int size(const string& input) {
+        return input.size();
+    }
+    void printSize(const string& input) {
+        cout << "La taille de "<< input << " est de " << size(input) << " caracteres." << endl;
+    }
+    bool isPalindrome(const string& s) {
+        for (int i = 0; i < s.size() / 2; i++) {
+            if (s[i] != s[s.size() - i - 1]) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 void printSpacing() {
