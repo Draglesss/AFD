@@ -78,13 +78,7 @@ class AFD {
         this->finalStates = afd.finalStates;
         this->states = afd.states;
     }
-    ~AFD() {
-        transitions.clear();
-        alphabet.clear();
-        finalStates.clear();
-        states.clear();
-    }
-    bool isFinalState(int state) const {
+    bool isFinalState(const int state) const {
         for (int i = 0; i < finalStates.size(); i++) {
             if (finalStates[i] == state) { //* if the state is in the final states vector	
                 return true;
@@ -92,7 +86,7 @@ class AFD {
         }
         return false;
     }
-    bool isValidInput(char symbol) const {
+    bool isValidInput(const char symbol) const {
         for (int i = 0; i < alphabet.size(); i++) {
             if (alphabet[i] == symbol) {
                 return true;
@@ -100,7 +94,7 @@ class AFD {
         }
         return false;
     }
-    bool isValidState(int state) const {
+    bool isValidState(const int state) const {
         for (int i = 0; i < states.size(); i++) {
             if (states[i] == state) {
                 return true;
@@ -108,7 +102,7 @@ class AFD {
         }
         return false;
     }
-    bool isValidTransition(int state, char symbol) const {
+    bool isValidTransition(const int state, const char symbol) const {
         for (int i = 0; i < transitions.size(); i++) {
             if (transitions[i].getState() == state && transitions[i].getSymbol() == symbol) {
                 return true;
@@ -116,7 +110,7 @@ class AFD {
         }
         return false;
     }
-    int getNextState(int state, char symbol) const {
+    int getNextState(const int state, const char symbol) const {
         for (int i = 0; i < transitions.size(); i++) {
             if (transitions[i].getState() == state && transitions[i].getSymbol() == symbol) {
                 return transitions[i].getNextState();
@@ -124,27 +118,27 @@ class AFD {
         }
         return -1;
     }
-    void addTransition(int state, char symbol, int nextState) {
+    void addTransition(const int state, const char symbol, const int nextState) {
         transitions.push_back(transition(state, symbol, nextState)); //* add a new transition to the transitions vector
     }
-    void addTransition(transition t) {
+    void addTransition(const transition t) {
         transitions.push_back(t);
     }
-    void addAlphabet(char symbol) {
+    void addAlphabet(const char symbol) {
         alphabet.push_back(symbol); //* add a new symbol to the alphabet vector
     }
-    void addAlphabet(vector<char> symbols) {
+    void addAlphabet(const vector<char> symbols) {
         for (int i = 0; i < symbols.size(); i++) {
             alphabet.push_back(symbols[i]);
         }
     }
-    void addFinalState(int state) {
+    void addFinalState(const int state) {
         finalStates.push_back(state); //* add a new final state to the final states vector
     }
-    void addState(int state) {
+    void addState(const int state) {
         states.push_back(state); //* add a new state to the states vector	
     }
-    void setInitialState(int state) {
+    void setInitialState(const int state) {
         this->initialState = state; //* set the initial state
     }
     int getInitialState() const {
