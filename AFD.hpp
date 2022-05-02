@@ -323,13 +323,13 @@ namespace AFD_fx {
         AFD afd;
         ifstream file(file_name);
         if (!file.is_open()) {
-            cout << "Erreur lors de l'ouverture du fichier." << endl;
+            cout << "ERROR : Erreur lors de l'ouverture du fichier." << endl;
             afd.setInitialState(-1);
             getch();
             exit(1);
         }
         else {
-            cout << "Fichier ouvert avec succes." << endl;
+            cout << "SUCCESS : Fichier ouvert avec succes." << endl;
         }
         string line;
         int state;
@@ -337,16 +337,14 @@ namespace AFD_fx {
         int nextState;
         vector<char> alphabet;
         transition t;
+        int count = 1;
         while (getline(file, line)) {
             switch (line[0]) {
             case 'I' :
-                if(line.size() != 3) {
-                    cout << "Erreur de syntax : l'etat initial." << endl;
+                if(line.size() != 3 || isalpha(line[2])) {
+                    cout << "Erreur de syntax : " << count << " - l'etat initial." << endl;
                     afd.setInitialState(-1);
                     return afd;
-                }else if (isalpha(line[2])) {
-                            afd.setInitialState(-1);
-                            return afd;
                 }
                 state = stoi(line.substr(2, line.size() - 2));
                 afd.setInitialState(state);
@@ -354,6 +352,7 @@ namespace AFD_fx {
             case 'A' :
                 for(int i = 2; i < line.size(); i = i + 2) {
                     if (!isalpha(line[i])) {
+                            cout << "Erreur de syntax : " << count << " - l'alphabet. (A)" << endl;
                             afd.setInitialState(-1);
                             return afd;
                         }
@@ -364,6 +363,7 @@ namespace AFD_fx {
             case 'F' :
                 for(int i = 2; i < line.size(); i=i+2) {
                         if (isalpha(line[i])) {
+                            cout << "Erreur de syntax : " << count << " - les états finaux (F)" << endl;
                             afd.setInitialState(-1);
                             return afd;
                         }
@@ -374,6 +374,7 @@ namespace AFD_fx {
             case 'E' :
                 for(int i = 2; i < line.size(); i=i+2) {
                         if (isalpha(line[i])) {
+                            cout << "Erreur de syntax : " << count << " - les états (E)" << endl;
                             afd.setInitialState(-1);
                             return afd;
                         }
@@ -389,9 +390,10 @@ namespace AFD_fx {
                 afd.addTransition(t);
                 break;
             default :
-                cout << "Erreur de syntax : ligne non reconnue." << endl;
+                cout << "Erreur de syntax : " << count << " - ligne non reconnue" << endl;
                 return afd;
             }
+            count++;
         }
         file.close();
         return afd;
