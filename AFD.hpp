@@ -99,11 +99,11 @@ class AFD {
         return false;
     }
     int getNextState(const int state, const char symbol) const {
-        for (int i = 0; i < transitions.size(); i++) {
-            if (transitions[i].getState() == state && transitions[i].getSymbol() == symbol) {
-                return transitions[i].getNextState();
-            }
-        }
+        auto itemItr = find_if(transitions.begin(), transitions.end(), [state, symbol](const transition& t) {
+            return t.getState() == state && t.getSymbol() == symbol;
+        });
+        if(itemItr != transitions.end())
+            return itemItr->getNextState();
         return -1;
     }
     void addTransition(const int state, const char symbol, const int nextState) {
@@ -386,11 +386,8 @@ namespace AFD_fx {
         return output;
     }
     string mirror(const char* input) {
-        string output;
-        for (int i = size(input); i >= 0; i--) {
-            output += input[i];
-        }
-        return output;
+        string output(input);
+        return mirror(output);
     }
     void printSize(const string& input) {
         cout << "La taille de "<< input << " est de " << input.size() << " caracteres." << endl;
