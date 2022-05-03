@@ -3,19 +3,16 @@
 #include <vector>
 #include <fstream>
 #include <conio.h>
-#include <cassert>
-#include <cstdlib>
-#include <cstdio>
 #include <algorithm>
 #pragma once
 using namespace std;
+
+int size(const char* in) { //* return the size of a const char* * != string
+    return sizeof(in) / sizeof(in[0]);
+};
 //* a transition is composed of a state,
 //* a symbol
 //* and a next state
-template <typename T> 
-int size(T in) {
-    return sizeof(in) / sizeof(in[0]);
-};
 void printSpacing();
 class transition {
     int state;
@@ -79,35 +76,26 @@ class AFD {
         this->states = afd.states;
     }
     bool isFinalState(const int state) const {
-        for (int i = 0; i < finalStates.size(); i++) {
-            if (finalStates[i] == state) { //* if the state is in the final states vector	
-                return true;
-            }
-        }
+        auto itemItr = find(finalStates.begin(), finalStates.end(), state);
+        return itemItr != finalStates.end();
         return false;
     }
     bool isValidInput(const char symbol) const {
-        for (int i = 0; i < alphabet.size(); i++) {
-            if (alphabet[i] == symbol) {
-                return true;
-            }
-        }
+        auto itemItr = find(alphabet.begin(), alphabet.end(), symbol);
+        return itemItr != alphabet.end();
         return false;
     }
     bool isValidState(const int state) const {
-        for (int i = 0; i < states.size(); i++) {
-            if (states[i] == state) {
-                return true;
-            }
-        }
+        auto itemItr = find(states.begin(), states.end(), state);
+        return itemItr != states.end();
         return false;
     }
     bool isValidTransition(const int state, const char symbol) const {
-        for (int i = 0; i < transitions.size(); i++) {
-            if (transitions[i].getState() == state && transitions[i].getSymbol() == symbol) {
-                return true;
-            }
-        }
+        //* using lambda function
+        auto itemItr = find_if(transitions.begin(), transitions.end(), [state, symbol](const transition& t) {
+            return t.getState() == state && t.getSymbol() == symbol;
+        });
+        return itemItr != transitions.end();
         return false;
     }
     int getNextState(const int state, const char symbol) const {
@@ -200,8 +188,8 @@ class AFD {
     void printInitialState() const {
         cout << "I = {" << initialState << "}" << endl;
     }
-    void print() const {
-        cout << "AFD: " << endl;
+    void print(string nom = "") const {
+        cout << "AFD: " << nom << endl;
         printInitialState();
         cout << "--------------------------" << endl;
         printAlphabet();
@@ -212,30 +200,6 @@ class AFD {
         cout << "--------------------------" << endl;
         printTransitions();
         cout << "--------------------------" << endl;
-    }
-    bool accept(const char* input) const {
-        int currentState = initialState;
-        for (int i = 0; i < size(input); i++) {
-            if(!isValidInput(input[i])) {
-                return false;
-            }
-            for (int j = 0; j < transitions.size(); j++) {
-                if (transitions[j].getSymbol() == input[i] and transitions[j].getState() == currentState) {
-                        cout << "(" << currentState << ") -- " << input[i] << " --> ";
-                        if (isFinalState(transitions[j].getNextState())) {
-                            cout << "((" << transitions[j].getNextState() << "))" << endl;
-                        } else {
-                            cout << transitions[j].getNextState() << endl;
-                        }
-                        currentState = transitions[j].getNextState();
-                        break;
-                }
-            }
-        }
-        if(isFinalState(currentState)) {
-            return true;
-        }
-        return false;
     }
     bool accept(const string& input) const {
        int currentState = initialState;
@@ -260,6 +224,10 @@ class AFD {
             return true;
         }
         return false;
+    }
+    bool accept(const char* input) const {
+        string string(input);
+        return accept(string);
     }
     bool isEmpty() const {
         return transitions.empty() and states.empty() and alphabet.empty() and finalStates.empty();
@@ -424,18 +392,8 @@ namespace AFD_fx {
         }
         return output;
     }
-    int size(const char* input) {
-        int i = 0;
-        while (input[i] != '\0') {
-            i++;
-        }
-        return i;
-    }
-    int size(const string& input) {
-        return input.size();
-    }
     void printSize(const string& input) {
-        cout << "La taille de "<< input << " est de " << size(input) << " caracteres." << endl;
+        cout << "La taille de "<< input << " est de " << input.size() << " caracteres." << endl;
     }
     bool isPalindrome(const string& s) {
         for (int i = 0; i < s.size() / 2; i++) {

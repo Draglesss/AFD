@@ -9,7 +9,7 @@ int main() {
     const AFD afd(read(fileName));
     if(!afd.checkHealth())
         return 0;
-    afd.print();
+    afd.print("AFD EX5");
     string mot = "abba";
     afd.Try(mot);
     mot = "bbbabb";
@@ -19,7 +19,6 @@ int main() {
     afd.Try("abbbbbbbbababbb");
     cout << mirror(mot) << endl;
     printSize(mot);
-    mot = "abba";
     cout << "Le mot " << mot << " est " << (AFD_fx::isPalindrome(mot) ? "" : "pas ") << "un palindrome" << endl;
     afd.inputFromUser();
     getch();
