@@ -201,15 +201,17 @@ class AFD {
         printTransitions();
         cout << "--------------------------" << endl;
     }
-    bool accept(const string& input) const {
-       int currentState = initialState;
-        for (int i = 0; i < input.size(); i++) {
-            if(!isValidInput(input[i])) {
+    template <typename T>
+    bool accept(const T& input) const {
+        const string inp(input);
+        int currentState = initialState;
+        for (int i = 0; i < inp.size(); i++) {
+            if(!isValidInput(inp[i])) {
                 return false;
             }
             for (int j = 0; j < transitions.size(); j++) {
-                if (transitions[j].getSymbol() == input[i] and transitions[j].getState() == currentState) {
-                        cout << "(" << currentState << ") -- " << input[i] << " --> ";
+                if (transitions[j].getSymbol() == inp[i] and transitions[j].getState() == currentState) {
+                        cout << "(" << currentState << ") -- " << inp[i] << " --> ";
                         if (isFinalState(transitions[j].getNextState())) {
                             cout << "((" << transitions[j].getNextState() << "))" << endl;
                         } else {
@@ -224,10 +226,6 @@ class AFD {
             return true;
         }
         return false;
-    }
-    bool accept(const char* input) const {
-        string string(input);
-        return accept(string);
     }
     bool isEmpty() const {
         return transitions.empty() and states.empty() and alphabet.empty() and finalStates.empty();
@@ -378,16 +376,13 @@ namespace AFD_fx {
         printSpacing();
         cout << "Veuillez entrer le nom du fichier a utiliser : ";
     }
-    string mirror(const string& input) {
-        string output;
+    template <typename T>
+    string mirror(T input) {
+        string output(input);
         for (int i = input.size() - 1; i >= 0; i--) {
             output += input[i];
         }
         return output;
-    }
-    string mirror(const char* input) {
-        string output(input);
-        return mirror(output);
     }
     void printSize(const string& input) {
         cout << "La taille de "<< input << " est de " << input.size() << " caracteres." << endl;
