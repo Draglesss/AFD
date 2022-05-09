@@ -124,7 +124,7 @@ class AFD {
         auto itemItr = find(finalStates.begin(), finalStates.end(), state);
         return itemItr != finalStates.end();
     }
-    bool isValidInput(const char symbol) const {
+    bool isValidChar(const char symbol) const {
         auto itemItr = find(alphabet.begin(), alphabet.end(), symbol);
         return itemItr != alphabet.end();
     }
@@ -279,7 +279,7 @@ class AFD {
         const string inp(input);
         int currentState = initialState;
         for (size_t i = 0; i < inp.size(); i++) {
-            if(!isValidInput(inp[i])) {
+            if(!isValidChar(inp[i])) {
                 return false;
             }
             for (size_t j = 0; j < transitions.size(); j++) {
@@ -310,7 +310,7 @@ class AFD {
     bool isCorrupted() const {
         return initialState == -1;
     }
-    bool checkHealth() const {
+    bool isHealthy() const {
         if (this->isCorrupted()) {
             cout << "ERROR : Syntax error" << endl;
             return false;
@@ -338,9 +338,9 @@ class AFD {
         output::printSpacing();
         cout << "Le mot " << input << " : \n" << (accept(input) ? "=> accepte" : "=> refuse") << endl;
     }
-    bool isValid(const string input) const {
+    bool isValidInput(const string& input) const {
         for (int i = 0; i < input.size(); i++) {
-            if(!isValidInput(input[i])) {
+            if(!isValidChar(input[i])) {
                 return false;
             }
         }

@@ -11,7 +11,7 @@ int main() {
     cout << ((AFd == afd) ? "similar" : "not similar" ) << endl;
     AFd = afd;
     const AFD afdd = read("automate.txt");
-    if(!afd.checkHealth())
+    if(!afd.isHealthy())
         return 0;
     afd.print("AFD EX5");
     AFd.print("test AFD");
