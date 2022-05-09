@@ -3,13 +3,38 @@
 #include <vector>
 #include <fstream>
 #include <conio.h>
+#include <iomanip>
 #include <algorithm>
 #pragma once
+#pragma execution_character_set( "utf-8" )
+#define colWidth 30
+#define spcWidth 80
 using namespace std;
-void printSpacing();
-int size(const char* in) { //* return the size of a const char* * != string
-    return sizeof(in) / sizeof(in[0]);
-};
+namespace output { //* decorative output functions for console 
+    void printSpacing(int n = spcWidth) {
+    for(int i = 0; i < n; i++) {
+        cout << "-";
+    }
+    cout << endl;
+    }
+    void printInTable(const vector<string> str, const vector<string> value) {
+        for(int i = 0; i < str.size(); i++) {
+            cout << setprecision(0) << setw(colWidth) << value[i] << setprecision(4) << 
+            setw(colWidth)<< str[i] << endl;
+            cout << setprecision(0) << setw(16);
+            printSpacing(50);
+        }
+    }
+}
+namespace useful {
+    template <typename T, typename U>
+    bool equal(const vector<T>& a, const vector<U>& b) {
+        return std::equal(a.begin(), a.end(), b.begin());
+    }
+    int size(const char* in) { //* return the size of a const char* * != string
+        return sizeof(in) / sizeof(in[0]);
+    };
+}
 //* a transition is composed of a state,
 //* a symbol
 //* and a next state
@@ -28,6 +53,9 @@ public:
     symbol('\0'),
     nextState(0)
     {}
+    bool operator==(const transition& t) const {
+        return state == t.state && symbol == t.symbol && nextState == t.nextState;
+    }
     int getState() const {
         return state;
     }
@@ -74,6 +102,24 @@ class AFD {
         this->finalStates = afd.finalStates;
         this->states = afd.states;
     }
+    AFD setAFD(const AFD afd) {
+        initialState = afd.getInitialState();
+        transitions = afd.getTransitions();
+        states = afd.getStates();
+        alphabet = afd.getAlphabet();
+        finalStates = afd.getFinalStates();
+        return *this;
+    }
+    AFD operator&=(const AFD afd) {
+        return setAFD(afd);
+    }
+    bool operator==(const AFD& afd) const {
+        return initialState == afd.getInitialState() and
+                transitions == afd.getTransitions() and
+                states == afd.getStates() and
+                alphabet == afd.getAlphabet() and
+                finalStates == afd.getFinalStates();
+    }
     bool isFinalState(const int state) const {
         auto itemItr = find(finalStates.begin(), finalStates.end(), state);
         return itemItr != finalStates.end();
@@ -101,15 +147,27 @@ class AFD {
             return itemItr->getNextState();
         return -1;
     }
+    private : bool checkTransitions(const transition& t) {
+        auto itemItr = find_if(transitions.begin(), transitions.end(), [t](const transition& t2) {
+            return t.getState() == t2.getState() && t.getSymbol() == t2.getSymbol();
+        });
+        if (itemItr != transitions.end())
+            return true;
+        return false;
+    }
+    public :
     void addTransition(const int state, const char symbol, const int nextState) {//* add a new transition to afd's transitions vector
+        if(checkTransitions(transition(state, symbol, nextState))) {
+            cout << "Transition t("<< state << ", " << symbol <<") already exists" << endl;
+            return;
+        }
         transitions.push_back(transition(state, symbol, nextState));
-        //sort transtions vector 
         sort(transitions.begin(), transitions.end(), [](const transition& t1, const transition& t2) {
             return t1.getState() < t2.getState();
         });
     }
-    void addTransition(const transition t) {
-        transitions.push_back(t);
+    void addTransition(const transition& t) {
+        addTransition(t.getState(), t.getSymbol(), t.getNextState());
     }
     void addAlphabet(const char symbol) {
         alphabet.push_back(symbol); //* add a new symbol to the alphabet vector
@@ -197,30 +255,34 @@ class AFD {
         }
     }
     void printInitialState() const {
-        cout << "I = {" << initialState << "}" << endl;
+        if (initialState == -2) 
+            cout << "I = { EMPTY }" << endl;
+        else 
+            cout << "I = {" << initialState << "}" << endl;
     }
-    void print(string nom = "") const {
+    void print(const string nom = "") const {
+        using namespace output;
         cout << "AFD: " << nom << endl;
         printInitialState();
-        cout << "--------------------------" << endl;
+        printSpacing();
         printAlphabet();
-        cout << "--------------------------" << endl;
+        printSpacing();
         printStates();
-        cout << "--------------------------" << endl;
+        printSpacing();
         printFinalStates();
-        cout << "--------------------------" << endl;
+        printSpacing();
         printTransitions();
-        cout << "--------------------------" << endl;
+        printSpacing();
     }
     template <typename T>
     bool accept(const T& input) const {
         const string inp(input);
         int currentState = initialState;
-        for (int i = 0; i < inp.size(); i++) {
+        for (size_t i = 0; i < inp.size(); i++) {
             if(!isValidInput(inp[i])) {
                 return false;
             }
-            for (int j = 0; j < transitions.size(); j++) {
+            for (size_t j = 0; j < transitions.size(); j++) {
                 if (transitions[j].getSymbol() == inp[i] and transitions[j].getState() == currentState) {
                         if(isFinalState(currentState)) {
                             cout << "((" << currentState << ")) -- " << inp[i] << " --> ";
@@ -273,7 +335,7 @@ class AFD {
     }
     template <typename T>
     void Try(const T& input)  const {
-        printSpacing();
+        output::printSpacing();
         cout << "Le mot " << input << " : \n" << (accept(input) ? "=> accepte" : "=> refuse") << endl;
     }
     bool isValid(const string input) const {
@@ -303,8 +365,7 @@ namespace AFD_fx {
         if (!file.is_open()) {
             cout << "ERROR : Erreur lors de l'ouverture du fichier." << endl;
             afd.setInitialState(-1);
-            getch();
-            exit(1);
+            return afd; 
         }
         else {
             cout << "SUCCESS : Fichier ouvert avec succes." << endl;
@@ -376,15 +437,12 @@ namespace AFD_fx {
         file.close();
         return afd;
     }
-    void printSpacing() {
-        cout << "--------------------------------------------------------------------------------" << endl;
-    }
     void printProtocol() {
-        using namespace AFD_fx;
+        using namespace output;
         printSpacing();
         cout << "Dans le fichier txt. Vous devez saisir en respectant ce protocol : \n";
         printSpacing();
-        cout << "Etat Initial => I,\n" <<"Transition => t,\n" << "Liste des Etats => E,\n" << "Liste d'etats finaux => F,\n" << "L'alphabet => A,\n";
+        printInTable({"I", "A", "F", "E", "t"}, {"Initial state", "Alphabet", "Final states", "States", "Transitions"});
         printSpacing();
         cout << "Veuillez entrer le nom du fichier a utiliser : ";
     }
@@ -408,6 +466,4 @@ namespace AFD_fx {
         return true;
     }
 }
-void printSpacing() {
-    AFD_fx::printSpacing();
-}
+
