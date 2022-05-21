@@ -147,6 +147,9 @@ class AFD {
             return itemItr->getNextState();
         return -1;
     }
+    int getNextState(const transition& t) const {
+        return t.getNextState();
+    }
     private : bool checkTransitions(const transition& t) {
         auto itemItr = find_if(transitions.begin(), transitions.end(), [t](const transition& t2) {
             return t.getState() == t2.getState() && t.getSymbol() == t2.getSymbol();
