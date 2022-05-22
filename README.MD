@@ -8,7 +8,7 @@ This project is to learn how to use the C++ language by building a simple consol
 
 <h2>How to use this project?</h2>
 This project's original main goal is to create a static library wich includes a full AFD implementation.
-So you can use this library to implement your own Finite Automate by including the header file and reading from a text file respecting the FA defining protocol. <br>
+So you can use this library to implement your own Finite Automate by including the header file and reading from a text file respecting the FA defining protocol or by setting the attributes manually using the AFD class methodes. <br>
 The header file is located in the AFD_cpp\AFD\AFD.hpp file.<br>
 The main file is an example of how to use the library.
 
