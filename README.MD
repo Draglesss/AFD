@@ -15,3 +15,8 @@ The main file is an example of how to use the library.
 <h2>What's the future of this project?</h2>
 This project is a work in progress.
 Soon i will be adding a GUI to this project, and also AFD to AFD manilpulation.
+
+<h3>Credits</h3>
+<ul>
+<li>Otmane Fatteh aka Draglesss</li>
+</ul>
