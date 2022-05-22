@@ -1,3 +1,2 @@
-AFD.exe
-main.exe
-build
+*.exe
+build/*
