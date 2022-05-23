@@ -44,15 +44,15 @@ class transition {
     int nextState;
 public:
     transition(int state, char symbol, int nextState) :
-    state(state),
-    symbol(symbol),
-    nextState(nextState)
-    {}
+        state(state),
+        symbol(symbol),
+        nextState(nextState)
+        {}
     transition() :
-    state(0),
-    symbol('\0'),
-    nextState(0)
-    {}
+        state(0),
+        symbol('\0'),
+        nextState(0)
+        {}
     bool operator==(const transition& t) const {
         return state == t.state && symbol == t.symbol && nextState == t.nextState;
     }
@@ -263,7 +263,7 @@ class AFD {
         else 
             cout << "I = {" << initialState << "}" << endl;
     }
-    void print(const string nom = "") const {
+    void print(const string nom = "") const { //* print the afd	with an optional name
         using namespace output;
         cout << "AFD: " << nom << endl;
         printInitialState();
@@ -368,7 +368,7 @@ namespace AFD_fx {
         if (!file.is_open()) {
             cout << "ERROR : Erreur lors de l'ouverture du fichier." << endl;
             afd.setInitialState(-1);
-            return afd; 
+            return afd;
         }
         else {
             cout << "SUCCESS : Fichier ouvert avec succes." << endl;
