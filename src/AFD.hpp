@@ -368,7 +368,7 @@ class AFD {
         }
         return true;
     }
-    void inputFromUser() const {
+    void consoleInput() const {
         string input;
         while (true) {
             cout << "Entrez un mot a tester : ";

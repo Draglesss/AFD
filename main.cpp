@@ -23,7 +23,7 @@ int main() {
     cout << mirror(mot) << endl;
     printSize(mot);
     cout << "Le mot " << mot << " est " << (AFD_fx::isPalindrome(mot) ? "" : "pas ") << "un palindrome" << endl;
-    afd.inputFromUser();
+    afd.consoleInput();
     cout << afd;
     getch();
     afd.isAccessibleState(1) ? cout << "accessible" << endl : cout << "not accessible" << endl;
