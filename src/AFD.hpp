@@ -65,17 +65,17 @@ class AFD {
         finalStates = afd.getFinalStates();
         return *this;
     }
-    AFD operator&=(const AFD afd) {
-        return setAFD(afd);
+    AFD operator&= (const AFD afd) {
+        return this->setAFD(afd);
     }
-    bool operator==(const AFD& afd) const {
+    bool operator== (const AFD& afd) const {
         return initialState == afd.getInitialState() and
                 transitions == afd.getTransitions() and
                 states == afd.getStates() and
                 alphabet == afd.getAlphabet() and
                 finalStates == afd.getFinalStates();
     }
-    friend ostream& operator<<(ostream& os, const AFD& afd) {
+    friend ostream& operator<< (ostream& os, const AFD& afd) {
         os << "------------------------------------------------------" << endl;
         os << "Initial State: " << afd.getInitialState() << endl;
         os << "Final States: ";
@@ -104,16 +104,13 @@ class AFD {
         return os;
     }
     bool isFinalState(const int state) const {
-        auto itemItr = find(finalStates.begin(), finalStates.end(), state);
-        return itemItr != finalStates.end();
+        return find(finalStates.begin(), finalStates.end(), state) != finalStates.end();
     }
     bool isValidChar(const char symbol) const {
-        auto itemItr = find(alphabet.begin(), alphabet.end(), symbol);
-        return itemItr != alphabet.end();
+        return find(alphabet.begin(), alphabet.end(), symbol) != alphabet.end();
     }
     bool isValidState(const int state) const {
-        auto itemItr = find(states.begin(), states.end(), state);
-        return itemItr != states.end();
+        return find(states.begin(), states.end(), state) != states.end();
     }
     bool isAccessibleState(const int state) const {
         if(!isValidState(state))
@@ -156,35 +153,43 @@ class AFD {
         return false;
     }
     public :
-    void addTransition(const int state, const char symbol, const int nextState) {//* add a new transition to afd's transitions vector
+    AFD addTransition(const int state, const char symbol, const int nextState) {
         if(checkTransitions(transition(state, symbol, nextState))) {
             cout << "Transition t("<< state << ", " << symbol <<") already exists" << endl;
-            return;
+            return *this;
         }
         transitions.push_back(transition(state, symbol, nextState));
         sort(transitions.begin(), transitions.end(), [](const transition& t1, const transition& t2) {
             return t1.getState() < t2.getState();
         });
+        return *this;
     }
-    void addTransition(const transition& t) {
+    AFD addTransition(const transition& t) {
         addTransition(t.getState(), t.getSymbol(), t.getNextState());
+        return *this;
     }
-    void addAlphabet(const char symbol) {
-        alphabet.push_back(symbol); //* add a new symbol to the alphabet vector
+    AFD addAlphabet(const char symbol) {
+        alphabet.push_back(symbol);
+        return *this;
     }
-    void addAlphabet(const vector<char> symbols) {
+    AFD addAlphabet(const vector<char> symbols) {
         for (int i = 0; i < symbols.size(); i++) {
             alphabet.push_back(symbols[i]);
         }
+        return *this;
     }
-    void addFinalState(const int state) {
-        finalStates.push_back(state); //* add a new final state to the final states vector
+    AFD addFinalState(const int state) {
+        finalStates.push_back(state);
+        sort(finalStates.begin(), finalStates.end());
+        return *this;
     }
-    void addState(const int state) {
-        states.push_back(state); //* add a new state to the states vector	
+    AFD addState(const int state) {
+        states.push_back(state);
+        return *this;
     }
-    void setInitialState(const int state) {
-        this->initialState = state; //* set the initial state
+    AFD setInitialState(const int state) {
+        this->initialState = state;
+        return *this;
     }
     int getInitialState() const {
         return initialState;
@@ -375,8 +380,6 @@ class AFD {
     }
 };
 
-//*----------------------------------------------------------------------------------------------------------------------
-
 namespace AFD_fx {
     template <typename T>
     AFD read(const T& file_name) {
@@ -385,7 +388,7 @@ namespace AFD_fx {
         if (!file.is_open()) {
             cout << "ERROR : Erreur lors de l'ouverture du fichier." << endl;
             afd.setInitialState(-1);
-            return afd;
+            return afd; //* return an empty afd
         }
         else {
             cout << "SUCCESS : Fichier ouvert avec succes." << endl;
@@ -486,4 +489,3 @@ namespace AFD_fx {
         return true;
     }
 }
-
