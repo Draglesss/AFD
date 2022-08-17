@@ -5,6 +5,7 @@ using namespace AFD_fx;
 int main() {
     printProtocol();
     string fileName;
+    cout << "Veuillez entrer le nom du fichier a utiliser : ";
     cin >> fileName;
     const AFD afd(read(fileName));
     AFD AFd(read("automate_EX5.txt"));
@@ -21,11 +22,10 @@ int main() {
     afd.Try("bababa");
     afd.Try("abbbbbbbbababbb");
     cout << mirror(mot) << endl;
-    printSize(mot);
     cout << "Le mot " << mot << " est " << (AFD_fx::isPalindrome(mot) ? "" : "pas ") << "un palindrome" << endl;
     afd.consoleInput();
     cout << afd;
-    getch();
     afd.isAccessibleState(1) ? cout << "accessible" << endl : cout << "not accessible" << endl;
+    getch();
     return 0;
 }
