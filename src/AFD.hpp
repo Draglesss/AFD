@@ -61,7 +61,7 @@ class AFD {
         this->finalStates = afd.finalStates;
         this->states = afd.states;
     }
-    AFD setAFD(const AFD afd) {
+    AFD& set(const AFD afd) {
         initialState = afd.getInitialState();
         transitions = afd.getTransitions();
         states = afd.getStates();
@@ -69,8 +69,8 @@ class AFD {
         finalStates = afd.getFinalStates();
         return *this;
     }
-    AFD operator&= (const AFD afd) {
-        return this->setAFD(afd);
+    AFD& operator&= (const AFD afd) {
+        return this->set(afd);
     }
     bool operator== (const AFD& afd) const {
         return initialState == afd.getInitialState() and
@@ -143,30 +143,30 @@ class AFD {
         });
         return *this;
     }
-    AFD addTransition(const transition& t) {
+    AFD& addTransition(const transition& t) {
         addTransition(t.getState(), t.getSymbol(), t.getNextState());
         return *this;
     }
-    AFD addAlphabet(const char symbol) {
+    AFD& addAlphabet(const char symbol) {
         alphabet.push_back(symbol);
         return *this;
     }
-    AFD addAlphabet(const vector<char> symbols) {
+    AFD& addAlphabet(const vector<char> symbols) {
         for (int i = 0; i < symbols.size(); i++) {
             alphabet.push_back(symbols[i]);
         }
         return *this;
     }
-    AFD addFinalState(const int state) {
+    AFD& addFinalState(const int state) {
         finalStates.push_back(state);
         sort(finalStates.begin(), finalStates.end());
         return *this;
     }
-    AFD addState(const int state) {
+    AFD& addState(const int state) {
         states.push_back(state);
         return *this;
     }
-    AFD setInitialState(const int state) {
+    AFD& setInitialState(const int state) {
         this->initialState = state;
         return *this;
     }
@@ -254,7 +254,7 @@ class AFD {
         printSpacing();
     }
     template <typename T>
-    bool accept(const T& input) const {
+    const bool accept(const T& input) const {
         const string inp(input);
         int currentState = initialState;
         for (size_t i = 0; i < inp.size(); i++) {
@@ -321,7 +321,7 @@ class AFD {
         }
         return true;
     }
-    AFD reset() {
+    AFD& reset() {
         initialState = -2;
         transitions.clear();
         states.clear();
@@ -332,7 +332,7 @@ class AFD {
     template <typename T>
     void Try(const T& input)  const {
         output::printSpacing();
-        cout << "Le mot " << input << " : \n" << (accept(input) ? "=> accepte" : "=> refuse") << endl;
+        cout << "Le mot " << input << " : \n" << (accept(input) ? GRN "=> accepte" NC : ERR "=> refuse" NC )  << endl;
     }
     bool isValidInput(const string& input) const {
         for (int i = 0; i < input.size(); i++) {
