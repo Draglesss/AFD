@@ -5,6 +5,7 @@
 #include <fstream>
 #include <conio.h>
 #include <iomanip>
+#include <chrono>
 #include <algorithm>
 #pragma once
 #pragma execution_character_set( "utf-8" )
@@ -86,7 +87,7 @@ class AFD {
     bool isFinalState(const int state) const {
         return find(finalStates.begin(), finalStates.end(), state) != finalStates.end();
     }
-    bool isValidChar(const char symbol) const {
+    bool isValidSymbol(const char symbol) const {
         return find(alphabet.begin(), alphabet.end(), symbol) != alphabet.end();
     }
     bool isValidState(const int state) const {
@@ -256,9 +257,11 @@ class AFD {
     template <typename T>
     const bool accept(const T& input) const {
         const string inp(input);
+        //chrono::steady_clock clock;
+        //auto start = clock.now();
         int currentState = initialState;
         for (size_t i = 0; i < inp.size(); i++) {
-            if(!isValidChar(inp[i])) {
+            if(!isValidSymbol(inp[i])) {
                 return false;
             }
             for (size_t j = 0; j < transitions.size(); j++) {
@@ -278,6 +281,9 @@ class AFD {
                 }
             }
         }
+        //auto end = clock.now();
+        //auto time_span = static_cast<chrono::duration<double>>(end - start);
+        //cout<<"Operation took: "<<time_span.count()<<" seconds !!!";
         return isFinalState(currentState);
         //* accept() raw
         //* bool accept(const T& input) const {
@@ -336,7 +342,7 @@ class AFD {
     }
     bool isValidInput(const string& input) const {
         for (int i = 0; i < input.size(); i++) {
-            if(!isValidChar(input[i])) {
+            if(!isValidSymbol(input[i])) {
                 return false;
             }
         }
@@ -443,19 +449,15 @@ namespace AFD_fx {
         printSpacing();
     }
     template <typename T>
-    string mirror(T input) {
-        string output(input);
+    string mirror(const T& inp) {
+        string input(inp), output;
         for (int i = input.size() - 1; i >= 0; i--) {
             output += input[i];
         }
         return output;
     }
-    bool isPalindrome(const string& s) {
-        for (int i = 0; i < s.size() / 2; i++) {
-            if (s[i] != s[s.size() - i - 1]) {
-                return false;
-            }
-        }
-        return true;
+    template <typename T>
+    bool isPalindrome(const T& s) {
+        return s == mirror(s);
     }
 }
