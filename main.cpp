@@ -1,5 +1,5 @@
-#include "./src/AFD.hpp"
 using namespace std;
+#include "./src/AFD.hpp" //! inclusion must be after the use of std namespace
 using namespace AFD_fx;
 
 int main() {

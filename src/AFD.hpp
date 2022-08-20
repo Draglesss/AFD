@@ -16,9 +16,10 @@
 #define CAU "\e[33m"
 #define ERR "\e[31m"
 #define GRN "\e[32m"
-using namespace std;
+
 
 namespace output { //* decorative output functions for console 
+    using namespace std;
     void printSpacing(int n = spcWidth) {
     for(int i = 0; i < n; i++) {
         std::cout << "-";
@@ -51,7 +52,6 @@ const std::string file_namesubstr(const T& __file_name) { //* return the extensi
 //* a list of final states,
 //* an alphabet,
 //* and a list of inputs
-
 class AFD {
     int initialState;
     std::vector<transition> transitions;
