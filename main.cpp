@@ -5,26 +5,27 @@ using namespace AFD_fx;
 int main() {
     printProtocol();
     string fileName;
-    cout << "Veuillez entrer le nom du fichier a utiliser : ";
-    cin >> fileName;
+    std::cout << "Veuillez entrer le nom du fichier a utiliser : ";
+    std::cin >> fileName;
     const AFD afd(read(fileName));
-    AFD yAFD(read("automate_EX5.afd"));
-    cout << ((yAFD == afd) ? "similar" : "not similar" ) << endl;
-    yAFD = afd;
+    try {
+     AFD *__afd = new AFD(read("automate_EX5.afd"));
+    }
+    catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+    }
     if(!afd.isHealthy())
         return 0;
     afd.print("AFD EX5");
-    yAFD.print("test AFD");
-    const string mot = "abba";
+    const std::string mot = "abba";
     afd.Try(mot);
     afd.Try("bbbabb");
     afd.Try("bababa");
     afd.Try("abbbbbbbbababbb");
-    cout << mirror("test") << endl;
-    cout << "Le mot " << mot << " est " << (AFD_fx::isPalindrome(mot) ? "" : "pas ") << "un palindrome" << endl;
+    std::cout << mirror("test") << std::endl;
+    std::cout << "Le mot " << mot << " est " << (AFD_fx::isPalindrome(mot) ? "" : "pas ") << "un palindrome" << std::endl;
     afd.consoleInput();
-    cout << afd;
-    afd.isAccessibleState(1) ? cout << "accessible" << endl : cout << "not accessible" << endl;
-    getch();
+    std::cout << afd;
+    afd.isAccessibleState(1) ? std::cout << "accessible" << std::endl : std::cout << "not accessible" << endl;
     return 0;
 }

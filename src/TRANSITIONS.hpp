@@ -2,9 +2,11 @@
 #include <string>
 #pragma once
 
-//* a transition is composed of a state,
-//* a symbol
-//* and a next state
+ //* @param state : state to check
+ //* @param symbol : symbol to check
+ //* @param nextState : next state to check
+//* @return true if state is accessible, false otherwise
+//* @brief check if state is accessible
 class transition {
     int state;
     char symbol;
