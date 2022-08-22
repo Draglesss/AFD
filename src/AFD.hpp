@@ -114,22 +114,16 @@ class AFD {
         }
         return false;
     }
+    inline bool isValidTransition(const transition t) {
+        return std::find_if(transitions.begin(), transitions.end(), [&t](const transition& tr) {
+            return tr == t;
+        }) != transitions.end();
+    }
     inline bool isValidTransition(const int state, const char symbol) const {
         //* using lambda function
         return std::find_if(transitions.begin(), transitions.end(), [state, symbol](const transition& t) {
             return t.getState() == state && t.getSymbol() == symbol;
         }) != transitions.end();
-    }
-    inline int getNextState(const int state, const char symbol) const {
-        auto itemItr = std::find_if(transitions.begin(), transitions.end(), [state, symbol](const transition& t) {
-            return t.getState() == state && t.getSymbol() == symbol;
-        });
-        if(itemItr != transitions.end())
-            return itemItr->getNextState();
-        return -1;
-    }
-    inline int getNextState(const transition& t) const {
-        return t.getNextState();
     }
     private : bool checkTransitions(const transition& t) {
         return std::find_if(transitions.begin(), transitions.end(), [t](const transition& t2) {
@@ -263,9 +257,13 @@ class AFD {
         const string nomStr(nom);
         print(nomStr);
     }
+    //* determins whether or not a string is accepted by the afd
+    //* and prints the path taken to parse the string
+    //* @param __input the string to be tested
+    //* @return true if the string is accepted, false otherwise
     template <typename T>
-    inline const bool accept(const T& input) const {
-        const string inp(input);
+    inline const bool accept(const T& __input) const {
+        const std::string inp(__input);
         //chrono::steady_clock clock;
         //auto start = clock.now();
         int currentState = initialState;
@@ -357,6 +355,7 @@ class AFD {
         }
         return true;
     }
+    //* takes input from console
     inline void consoleInput() const {
         std::string input;
         while (true) {
@@ -370,6 +369,9 @@ class AFD {
 };
 
 namespace AFD_fx {
+    //* loads an afd from a file into memory / afd object
+    //* @param __file_name : the name of the file to load
+    //* @return the loaded afd if the file is valid, an empty afd otherwise
     template <typename T>
     inline AFD read(const T& __file_name) {
         AFD afd;
@@ -378,21 +380,21 @@ namespace AFD_fx {
         const std::string ext = __file.substr(__file.find_last_of(".") + 1);
         if(!std::regex_match(ext, std::regex("(afd)|(txt)", std::regex_constants::icase)))
         {
-            std::cout << ERR "ERROR : Le fichier n'est pas un fichier TXT ou AFD." NC << std::endl;
+            std::cerr << ERR "ERROR : Le fichier n'est pas un fichier TXT ou AFD." NC << std::endl;
             std::cerr << caution_message << std::endl;
             throw new exception();
-            return afd;
+            return afd.setInitialState(-2);
         }
         ifstream file(__file); //* pointer to / opens the file so no need for .open()
         if(!file) {
-            std::cout << ERR "ERROR : Le fichier " + __file + " n'existe pas." NC << std::endl;
+            std::cerr << ERR "ERROR : Le fichier " + __file + " n'existe pas." NC << std::endl;
             std::cerr << caution_message << std::endl;
             throw new exception();
-            return afd;
+            return afd.setInitialState(-2);
         }
         std::cout << "--------------------- Reading " << __file << " ---------------------" << std::endl;
         if (!file.is_open()) {
-            std::cout << ERR "ERROR : Erreur lors de l'ouverture du fichier." NC << std::endl;
+            std::cerr << ERR "ERROR : Erreur lors de l'ouverture du fichier." NC << std::endl;
             std::cerr << caution_message << std::endl;
             throw new exception();
             return afd.setInitialState(-2); //* return an empty afd
@@ -410,7 +412,7 @@ namespace AFD_fx {
                 case 'I' :
                     if(line.size() != 3 || isalpha(line[2])) {
                         std::cout << ERR "Erreur de syntax : " << count << " - l'etat initial (I)." NC << std::endl;
-                        return afd.setInitialState(-1);
+                        return afd.setInitialState(-1); //* return a corrupted afd
                     }
                     state = stoi(line.substr(2, line.size() - 2));
                     afd.setInitialState(state);
@@ -426,7 +428,7 @@ namespace AFD_fx {
                     afd.addAlphabet(alphabet);
                     break;
                 case 'F' :
-                    for(int i = 2; i < line.size(); i=i+2) {
+                    for(int i = 2; i < line.size(); i = i + 2) {
                             if (isalpha(line[i])) {
                                 std::cout << ERR "Erreur de syntax : " << count << " - les états finaux (F)" NC << std::endl;
                                 return afd.setInitialState(-1);
@@ -436,7 +438,7 @@ namespace AFD_fx {
                     }
                     break;
                 case 'E' :
-                    for(int i = 2; i < line.size(); i=i+2) {
+                    for(int i = 2; i < line.size(); i = i + 2) {
                             if (isalpha(line[i])) {
                                 std::cout << ERR "Erreur de syntax : " << count << " - les états (E)" NC << std::endl;
                                 return afd.setInitialState(-1);
@@ -474,15 +476,16 @@ namespace AFD_fx {
         printSpacing();
     }
     template <typename T>
-    inline std::string mirror(const T& inp) {
-        std::string input(inp), output;
+    inline std::string mirror(const T& __input) {
+        std::string input(__input), output;
         for (int i = input.size() - 1; i >= 0; i--) {
             output += input[i];
         }
         return output;
     }
     template <typename T>
-    inline bool isPalindrome(const T& s) {
-        return s == mirror(s);
+    inline bool isPalindrome(const T& __input) {
+        std::string input(__input);
+        return input == mirror(input);
     }
 }

@@ -8,14 +8,15 @@ int main() {
     std::cout << "Veuillez entrer le nom du fichier a utiliser : ";
     std::cin >> fileName;
     const AFD afd(read(fileName));
-    try {
+    /* try {
      AFD *__afd = new AFD(read("automate_EX5.afd"));
+        __afd->print();
+        delete __afd;
     }
     catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
-    }
-    if(!afd.isHealthy())
-        return 0;
+    } */
+    if(!afd.isHealthy()) return 0;
     afd.print("AFD EX5");
     const std::string mot = "abba";
     afd.Try(mot);
