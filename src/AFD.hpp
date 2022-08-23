@@ -21,10 +21,10 @@
 namespace output { //* decorative output functions for console 
     using namespace std;
     void printSpacing(int n = spcWidth) {
-    for(int i = 0; i < n; i++) {
-        std::cout << "-";
-    }
-    std::cout << endl;
+        for(int i = 0; i < n; i++) {
+            std::cout << "-";
+        }
+        std::cout << endl;
     }
     void printInTable(const std::vector<string> str, const std::vector<string> value) {
         for(int i = 0; i < str.size(); i++) {
@@ -38,7 +38,7 @@ namespace output { //* decorative output functions for console
 template <typename T> 
 int size(const T* in) { //* return the size of a const char* * != string
     return sizeof(in) / sizeof(in[0]);
-};
+}
 int size(const string& in) { //* return the size of a string
     return in.size();
 }
@@ -69,7 +69,7 @@ class AFD {
         this->finalStates = afd.finalStates;
         this->states = afd.states;
     }
-    AFD& set(const AFD afd) {
+    AFD& set(const AFD& afd) {
         initialState = afd.getInitialState();
         transitions = afd.getTransitions();
         states = afd.getStates();
@@ -77,7 +77,7 @@ class AFD {
         finalStates = afd.getFinalStates();
         return *this;
     }
-    AFD& operator&= (const AFD afd) {
+    AFD& operator&= (const AFD& afd) {
         return this->set(afd);
     }
     inline bool operator== (const AFD& afd) const {
@@ -114,13 +114,12 @@ class AFD {
         }
         return false;
     }
-    inline bool isValidTransition(const transition t) {
+    inline bool isValidTransition(const transition& t) {
         return std::find_if(transitions.begin(), transitions.end(), [&t](const transition& tr) {
             return tr == t;
         }) != transitions.end();
     }
     inline bool isValidTransition(const int state, const char symbol) const {
-        //* using lambda function
         return std::find_if(transitions.begin(), transitions.end(), [state, symbol](const transition& t) {
             return t.getState() == state && t.getSymbol() == symbol;
         }) != transitions.end();
@@ -131,19 +130,15 @@ class AFD {
         }) != transitions.end();
     }
     public :
-    inline AFD addTransition(const int state, const char symbol, const int nextState) {
-        if(checkTransitions(transition(state, symbol, nextState))) {
-            cout << "Transition t("<< state << ", " << symbol <<") already exists" << endl;
+    inline AFD& addTransition(const transition& t) {
+        if(checkTransitions(t)) {
+            cout << "Transition t("<< t.getState() << ", " << t.getSymbol() <<") already exists" << endl;
             return *this;
         }
-        transitions.push_back(transition(state, symbol, nextState));
+        transitions.push_back(t);
         std::sort(transitions.begin(), transitions.end(), [](const transition& t1, const transition& t2) {
             return t1.getState() < t2.getState();
         });
-        return *this;
-    }
-    inline AFD& addTransition(const transition& t) {
-        addTransition(t.getState(), t.getSymbol(), t.getNextState());
         return *this;
     }
     inline AFD& addAlphabet(const char symbol) {

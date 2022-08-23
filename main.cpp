@@ -16,9 +16,11 @@ int main() {
     catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     } */
-    if(!afd.isHealthy()) return 0;
+    if(!afd.isHealthy()) 
+        return 0;
     afd.print("AFD EX5");
     const std::string mot = "abba";
+    const AFD _AFD = afd;
     afd.Try(mot);
     afd.Try("bbbabb");
     afd.Try("bababa");

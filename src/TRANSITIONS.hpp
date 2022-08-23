@@ -38,14 +38,17 @@ public:
     int getNextState() const {
         return nextState;
     }
-    void setState(int state) {
+    transition setState(int state) {
         this->state = state;
+        return *this;
     }
-    void setSymbol(char symbol) {
+    transition setSymbol(char symbol) {
         this->symbol = symbol;
+        return *this;
     }
-    void setNextState(int nextState) {
+    transition setNextState(int nextState) {
         this->nextState = nextState;
+        return *this;
     }
     void print() const {
         std::cout << "t" << "(" << this->state << "," << this->symbol << "," << this->nextState << ")" << std::endl;
