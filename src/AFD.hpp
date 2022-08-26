@@ -59,17 +59,17 @@ class AFD {
     std::vector<int> finalStates;
     std::vector<int> states;
     public :
-    AFD() {
+    inline AFD() {
         initialState = -2;
     }
-    AFD(const AFD& afd) {
+    inline AFD(const AFD& afd) {
         this->initialState = afd.initialState;
         this->transitions = afd.transitions;
         this->alphabet = afd.alphabet;
         this->finalStates = afd.finalStates;
         this->states = afd.states;
     }
-    AFD& set(const AFD& afd) {
+    inline AFD& set(const AFD& afd) {
         initialState = afd.getInitialState();
         transitions = afd.getTransitions();
         states = afd.getStates();
@@ -77,7 +77,7 @@ class AFD {
         finalStates = afd.getFinalStates();
         return *this;
     }
-    AFD& operator&= (const AFD& afd) {
+    inline AFD& operator&= (const AFD& afd) {
         return this->set(afd);
     }
     inline bool operator== (const AFD& afd) const {
@@ -230,7 +230,7 @@ class AFD {
     }
     inline void printInitialState() const {
         if (initialState == -2) 
-            std::cout << "I = { EMPTY }" << std::endl;
+            std::cout << "I = { EMPTY } (-2)" << std::endl;
         else
             std::cout << "I = {" << initialState << "}" << std::endl;
     }
@@ -264,6 +264,7 @@ class AFD {
         int currentState = initialState;
         for (size_t i = 0; i < inp.size(); i++) {
             if(!isValidSymbol(inp[i])) {
+                cerr << CAU << inp[i] << " is an invalid symbol"  << NC << endl;
                 return false;
             }
             for (size_t j = 0; j < transitions.size(); j++) {
@@ -338,7 +339,8 @@ class AFD {
         return *this;
     }
     template <typename T>
-    inline void Try(const T& input)  const {
+    inline void Try(const T& __input)  const {
+        std::string input(__input);
         output::printSpacing();
         std::cout << "Le mot " << input << " : \n" << (accept(input) ? GRN "=> accepte" NC : ERR "=> refuse" NC )  << std::endl;
     }
@@ -365,8 +367,9 @@ class AFD {
 
 namespace AFD_fx {
     //* loads an afd from a file into memory / afd object
+    //* @dev : the file to be loaded
     //* @param __file_name : the name of the file to load
-    //* @return the loaded afd if the file is valid, an empty afd otherwise
+    //* @return the loaded afd if the file is valid, an empty afd with an initial state equal to -2 if the file requested failed to open, or -1 if afd stored in the file is flawed otherwise
     template <typename T>
     inline AFD read(const T& __file_name) {
         AFD afd;
@@ -377,21 +380,18 @@ namespace AFD_fx {
         {
             std::cerr << ERR "ERROR : Le fichier n'est pas un fichier TXT ou AFD." NC << std::endl;
             std::cerr << caution_message << std::endl;
-            throw new exception();
             return afd.setInitialState(-2);
         }
         ifstream file(__file); //* pointer to / opens the file so no need for .open()
         if(!file) {
             std::cerr << ERR "ERROR : Le fichier " + __file + " n'existe pas." NC << std::endl;
             std::cerr << caution_message << std::endl;
-            throw new exception();
             return afd.setInitialState(-2);
         }
         std::cout << "--------------------- Reading " << __file << " ---------------------" << std::endl;
         if (!file.is_open()) {
             std::cerr << ERR "ERROR : Erreur lors de l'ouverture du fichier." NC << std::endl;
             std::cerr << caution_message << std::endl;
-            throw new exception();
             return afd.setInitialState(-2); //* return an empty afd
         }
         std::cout << GRN "SUCCESS : Fichier ouvert avec succes." NC << std::endl;
@@ -402,9 +402,9 @@ namespace AFD_fx {
         std::vector<char> alphabet;
         transition t;
         int count = 1;
-        while (getline(file, line)) {
-            switch (line[0]) {
-                case 'I' :
+        while (getline(file, line)) { //* reads each line of the file
+            switch (line[0]) { //* checks the first character of the line
+                case 'I' : //* initial state
                     if(line.size() != 3 || isalpha(line[2])) {
                         std::cout << ERR "Erreur de syntax : " << count << " - l'etat initial (I)." NC << std::endl;
                         return afd.setInitialState(-1); //* return a corrupted afd
@@ -412,7 +412,7 @@ namespace AFD_fx {
                     state = stoi(line.substr(2, line.size() - 2));
                     afd.setInitialState(state);
                     break;
-                case 'A' :
+                case 'A' : //* alphabet
                     for(int i = 2; i < line.size(); i = i + 2) {
                         if (!isalpha(line[i])) {
                                 std::cout << ERR "Erreur de syntax : " << count << " - l'alphabet (A)." NC << std::endl;
@@ -422,7 +422,7 @@ namespace AFD_fx {
                     }
                     afd.addAlphabet(alphabet);
                     break;
-                case 'F' :
+                case 'F' : //* final states
                     for(int i = 2; i < line.size(); i = i + 2) {
                             if (isalpha(line[i])) {
                                 std::cout << ERR "Erreur de syntax : " << count << " - les états finaux (F)" NC << std::endl;
@@ -432,7 +432,7 @@ namespace AFD_fx {
                             afd.addFinalState(state);
                     }
                     break;
-                case 'E' :
+                case 'E' : //* states line
                     for(int i = 2; i < line.size(); i = i + 2) {
                             if (isalpha(line[i])) {
                                 std::cout << ERR "Erreur de syntax : " << count << " - les états (E)" NC << std::endl;
@@ -442,7 +442,7 @@ namespace AFD_fx {
                             afd.addState(state);
                     }
                     break;
-                case 't' :
+                case 't' : //* transitions line
                     try {
                     state = stoi(line.substr(2, 1));
                     symbol = line[4];
@@ -460,7 +460,7 @@ namespace AFD_fx {
             count++;
         }
         file.close();
-        return afd;
+        return afd; //* return the loaded afd
     }
     inline void printProtocol() {
         using namespace output;

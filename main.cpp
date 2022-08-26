@@ -8,6 +8,7 @@ int main() {
     std::cout << "Veuillez entrer le nom du fichier a utiliser : ";
     std::cin >> fileName;
     const AFD afd(read(fileName));
+    const AFD test_afd(read("test_automate.afd"));
     /* try {
      AFD *__afd = new AFD(read("automate_EX5.afd"));
         __afd->print();
@@ -16,6 +17,7 @@ int main() {
     catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     } */
+    cout << test_afd;
     if(!afd.isHealthy()) 
         return 0;
     afd.print("AFD EX5");
