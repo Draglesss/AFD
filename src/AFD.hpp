@@ -125,7 +125,7 @@ class AFD {
         }) != transitions.end();
     }
     private : bool checkTransitions(const transition& t) {
-        return std::find_if(transitions.begin(), transitions.end(), [t](const transition& t2) {
+        return std::find_if(transitions.begin(), transitions.end(), [&t](const transition& t2) {
             return t.getState() == t2.getState() && t.getSymbol() == t2.getSymbol();
         }) != transitions.end();
     }
@@ -157,11 +157,14 @@ class AFD {
         return *this;
     }
     inline AFD& addState(const int state) {
-        states.push_back(state);
+        if (!isValidState(state)) {
+            states.push_back(state);
+            std::sort(states.begin(), states.end());
+        }
         return *this;
     }
     inline AFD& setInitialState(const int state) {
-        this->initialState = state;
+        initialState = state;
         return *this;
     }
     inline int getInitialState() const {
@@ -258,29 +261,29 @@ class AFD {
     //* @return true if the string is accepted, false otherwise
     template <typename T>
     inline const bool accept(const T& __input) const {
-        const std::string inp(__input);
+        const std::string input(__input);
         //chrono::steady_clock clock;
         //auto start = clock.now();
         int currentState = initialState;
-        for (size_t i = 0; i < inp.size(); i++) {
-            if(!isValidSymbol(inp[i])) {
-                cerr << CAU << inp[i] << " is an invalid symbol"  << NC << endl;
+        for (size_t i = 0; i < input.size(); i++) {
+            if(!isValidSymbol(input[i])) {
+                cerr << CAU << input[i] << " is an invalid symbol"  << NC << endl;
                 return false;
             }
             for (size_t j = 0; j < transitions.size(); j++) {
-                if (transitions[j].getSymbol() == inp[i] and transitions[j].getState() == currentState) {
-                        if(isFinalState(currentState)) {
-                            std::cout << GRN"((" << currentState << "))" NC << " -- " << inp[i] << " --> ";
-                        }
-                        else
-                            cout << "(" << currentState << ") -- " << inp[i] << " --> ";
-                        if (isFinalState(transitions[j].getNextState())) {
-                            std::cout << GRN "((" << transitions[j].getNextState() << "))" NC << std::endl;
-                        } else {
-                            std::cout << transitions[j].getNextState() << std::endl;
-                        }
-                        currentState = transitions[j].getNextState();
-                        break;
+                if (transitions[j].getSymbol() == input[i] and transitions[j].getState() == currentState) {
+                    if(isFinalState(currentState)) {
+                        std::cout << GRN"((" << currentState << "))" NC << " -- " << input[i] << " --> ";
+                    }
+                    else
+                        cout << "(" << currentState << ") -- " << input[i] << " --> ";
+                    if (isFinalState(transitions[j].getNextState())) {
+                        std::cout << GRN "((" << transitions[j].getNextState() << "))" NC << std::endl;
+                    } else {
+                        std::cout << transitions[j].getNextState() << std::endl;
+                    }
+                    currentState = transitions[j].getNextState();
+                    break;
                 }
             }
         }
@@ -352,7 +355,7 @@ class AFD {
         }
         return true;
     }
-    //* takes input from console
+    //* takes repeated input from console till the user enters exit
     inline void consoleInput() const {
         std::string input;
         while (true) {
@@ -367,16 +370,15 @@ class AFD {
 
 namespace AFD_fx {
     //* loads an afd from a file into memory / afd object
-    //* @dev : the file to be loaded
     //* @param __file_name : the name of the file to load
     //* @return the loaded afd if the file is valid, an empty afd with an initial state equal to -2 if the file requested failed to open, or -1 if afd stored in the file is flawed otherwise
     template <typename T>
     inline AFD read(const T& __file_name) {
-        AFD afd;
-        const std::string __file(__file_name);
-        const std::string caution_message(CAU "CAUTION : AFD generated from \"" + __file + "\" is empty!" NC);
-        const std::string ext = __file.substr(__file.find_last_of(".") + 1);
-        if(!std::regex_match(ext, std::regex("(afd)|(txt)", std::regex_constants::icase)))
+        AFD afd; //* afd to load
+        const std::string __file(__file_name); //* file to load
+        const std::string caution_message(CAU "CAUTION : AFD generated from \"" + __file + "\" is empty!" NC); 
+        const std::string ext = __file.substr(__file.find_last_of(".") + 1); //* file extension
+        if(!std::regex_match(ext, std::regex("(afd)|(txt)", std::regex_constants::icase))) 
         {
             std::cerr << ERR "ERROR : Le fichier n'est pas un fichier TXT ou AFD." NC << std::endl;
             std::cerr << caution_message << std::endl;
@@ -400,12 +402,15 @@ namespace AFD_fx {
         char symbol, id;
         int nextState;
         std::vector<char> alphabet;
-        transition t;
         int count = 1;
         while (getline(file, line)) { //* reads each line of the file
+            line.erase(line.find_last_not_of(" \n\r\t") + 1); //* removes trailing whitespaces
+            if (line.empty() || line[0] == '#') { //* skips empty lines and comments
+                continue;
+            }
             switch (line[0]) { //* checks the first character of the line
                 case 'I' : //* initial state
-                    if(line.size() != 3 || isalpha(line[2])) {
+                    if(isalpha(line[2])) {
                         std::cout << ERR "Erreur de syntax : " << count << " - l'etat initial (I)." NC << std::endl;
                         return afd.setInitialState(-1); //* return a corrupted afd
                     }
@@ -425,7 +430,7 @@ namespace AFD_fx {
                 case 'F' : //* final states
                     for(int i = 2; i < line.size(); i = i + 2) {
                             if (isalpha(line[i])) {
-                                std::cout << ERR "Erreur de syntax : " << count << " - les états finaux (F)" NC << std::endl;
+                                std::cout << ERR "Erreur de syntax : " << count << " - les états finaux (F)." NC << std::endl;
                                 return afd.setInitialState(-1);
                             }
                             state = stoi(line.substr(i, 1));
@@ -435,7 +440,7 @@ namespace AFD_fx {
                 case 'E' : //* states line
                     for(int i = 2; i < line.size(); i = i + 2) {
                             if (isalpha(line[i])) {
-                                std::cout << ERR "Erreur de syntax : " << count << " - les états (E)" NC << std::endl;
+                                std::cout << ERR "Erreur de syntax : " << count << " - les états (E)." NC << std::endl;
                                 return afd.setInitialState(-1);
                             }
                             state = stoi(line.substr(i, 1));
@@ -472,7 +477,8 @@ namespace AFD_fx {
     }
     template <typename T>
     inline std::string mirror(const T& __input) {
-        std::string input(__input), output;
+        const std::string input(__input);
+        std::string output;
         for (int i = input.size() - 1; i >= 0; i--) {
             output += input[i];
         }
@@ -480,7 +486,7 @@ namespace AFD_fx {
     }
     template <typename T>
     inline bool isPalindrome(const T& __input) {
-        std::string input(__input);
+        const std::string input(__input);
         return input == mirror(input);
     }
 }
