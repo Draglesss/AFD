@@ -1,0 +1,12 @@
+# test afd
+I 1    
+F 3
+A a b
+E 3 1 2
+t 1 a 1
+t 1 b 2    
+t 2 a 3
+t 2 b 2
+
+t 3 a 3  
+t 3 b 1  
