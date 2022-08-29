@@ -378,14 +378,14 @@ namespace AFD_fx {
         const std::string __file(__file_name); //* file to load
         const std::string caution_message(CAU "CAUTION : AFD generated from \"" + __file + "\" is empty!" NC); 
         const std::string ext = __file.substr(__file.find_last_of(".") + 1); //* file extension
-        if(!std::regex_match(ext, std::regex("(afd)|(txt)", std::regex_constants::icase))) 
+        if (!std::regex_match(ext, std::regex("(afd)|(txt)", std::regex_constants::icase))) 
         {
             std::cerr << ERR "ERROR : Le fichier n'est pas un fichier TXT ou AFD." NC << std::endl;
             std::cerr << caution_message << std::endl;
             return afd.setInitialState(-2);
         }
         ifstream file(__file); //* pointer to / opens the file so no need for .open()
-        if(!file) {
+        if (!file) {
             std::cerr << ERR "ERROR : Le fichier " + __file + " n'existe pas." NC << std::endl;
             std::cerr << caution_message << std::endl;
             return afd.setInitialState(-2);
@@ -410,7 +410,7 @@ namespace AFD_fx {
             }
             switch (line[0]) { //* checks the first character of the line
                 case 'I' : //* initial state
-                    if(isalpha(line[2])) {
+                    if (isalpha(line[2])) {
                         std::cout << ERR "Erreur de syntax : " << count << " - l'etat initial (I)." NC << std::endl;
                         return afd.setInitialState(-1); //* return a corrupted afd
                     }
@@ -418,7 +418,7 @@ namespace AFD_fx {
                     afd.setInitialState(state);
                     break;
                 case 'A' : //* alphabet
-                    for(int i = 2; i < line.size(); i = i + 2) {
+                    for (int i = 2; i < line.size(); i = i + 2) {
                         if (!isalpha(line[i])) {
                                 std::cout << ERR "Erreur de syntax : " << count << " - l'alphabet (A)." NC << std::endl;
                                 return afd.setInitialState(-1);
@@ -428,7 +428,7 @@ namespace AFD_fx {
                     afd.addAlphabet(alphabet);
                     break;
                 case 'F' : //* final states
-                    for(int i = 2; i < line.size(); i = i + 2) {
+                    for (int i = 2; i < line.size(); i = i + 2) {
                             if (isalpha(line[i])) {
                                 std::cout << ERR "Erreur de syntax : " << count << " - les états finaux (F)." NC << std::endl;
                                 return afd.setInitialState(-1);
@@ -438,7 +438,7 @@ namespace AFD_fx {
                     }
                     break;
                 case 'E' : //* states line
-                    for(int i = 2; i < line.size(); i = i + 2) {
+                    for (int i = 2; i < line.size(); i = i + 2) {
                             if (isalpha(line[i])) {
                                 std::cout << ERR "Erreur de syntax : " << count << " - les états (E)." NC << std::endl;
                                 return afd.setInitialState(-1);
