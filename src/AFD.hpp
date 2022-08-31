@@ -114,7 +114,7 @@ class AFD {
         }
         return false;
     }
-    inline bool isValidTransition(const transition& t) {
+    inline bool isValidTransition(const transition& t) const {
         return std::find_if(transitions.begin(), transitions.end(), [&t](const transition& tr) {
             return tr == t;
         }) != transitions.end();
@@ -124,12 +124,17 @@ class AFD {
             return t.getState() == state && t.getSymbol() == symbol;
         }) != transitions.end();
     }
-    private : bool checkTransitions(const transition& t) {
+    private : bool checkTransitions(const transition& t) const {
         return std::find_if(transitions.begin(), transitions.end(), [&t](const transition& t2) {
             return t.getState() == t2.getState() && t.getSymbol() == t2.getSymbol();
         }) != transitions.end();
     }
     public :
+    /**
+     * @brief add a transition to the transitions vector and sort it
+     * @param t the transition to add
+     * @return the current AFD object by reference
+     */
     inline AFD& addTransition(const transition& t) {
         if(checkTransitions(t)) {
             cout << "Transition t("<< t.getState() << ", " << t.getSymbol() <<") already exists" << endl;
@@ -141,14 +146,22 @@ class AFD {
         });
         return *this;
     }
+    /**
+     * @brief add a symbol to the alphabet vector
+     * @param symbol the symbol to add
+     * @return the current AFD object by reference
+     */
     inline AFD& addAlphabet(const char symbol) {
         alphabet.push_back(symbol);
         return *this;
     }
+    /**
+     * @brief add a char vector to the end of the alphabet vector
+     * @param symbols char vector of symbols to add
+     * @return the current AFD object by reference
+     */
     inline AFD& addAlphabet(const vector<char> symbols) {
-        for (int i = 0; i < symbols.size(); i++) {
-            alphabet.push_back(symbols[i]);
-        }
+        alphabet.insert(alphabet.end(), symbols.begin(), symbols.end());
         return *this;
     }
     inline AFD& addFinalState(const int state) {
@@ -198,18 +211,16 @@ class AFD {
             std::cout << " EMPTY }" << std::endl;
         for (int i = 0; i < alphabet.size(); i++) {
             std::cout << alphabet[i];
-            if (i != alphabet.size() - 1) {
+            if (i != alphabet.size() - 1)
                 std::cout << ", ";
-            }
             else
                 std::cout << "}" << std::endl;
         }
     }
     inline void printFinalStates() const {
         std::cout << "F = {";
-        if(finalStates.size() == 0) {
+        if(finalStates.size() == 0)
             std::cout << " EMPTY }" << std::endl;
-        }
         for (int i = 0; i < finalStates.size(); i++) {
             std::cout << finalStates[i];
             if (i != finalStates.size() - 1)
@@ -220,9 +231,8 @@ class AFD {
     }
     inline void printStates() const {
         std::cout << "E = {";
-        if (states.size() == 0) {
+        if (states.size() == 0)
             std::cout << " EMPTY }" << std::endl;
-        }
         for (auto& state : states) {
             std::cout << state;
             if (state != states.back())
@@ -252,7 +262,7 @@ class AFD {
         printSpacing();
     }
     inline void print(const char* nom) const {
-        const string nomStr(nom);
+        const std::string nomStr(nom);
         print(nomStr);
     }
     //* determins whether or not a string is accepted by the afd
@@ -289,7 +299,7 @@ class AFD {
         }
         //auto end = clock.now();
         //auto time_span = static_cast<chrono::duration<double>>(end - start);
-        //cout<<"Operation took: "<<time_span.count()<<" seconds !!!";
+        //cout << "Operation took: " << time_span.count() << " seconds !!!" << endl;
         return isFinalState(currentState);
         //* accept() raw
         //* bool accept(const T& input) const {
@@ -320,15 +330,15 @@ class AFD {
     }
     inline bool isHealthy() const {
         if (this->isCorrupted()) {
-            std::cout << ERR "ERROR : Syntax error." NC << std::endl;
+            std::cerr << ERR "ERROR : Syntax error." NC << std::endl;
             return false;
         }
         else if (this->isEmpty()) {
-            std::cout << ERR "ERROR : L'automate est vide." NC << std::endl;
+            std::cerr << ERR "ERROR : L'automate est vide." NC << std::endl;
             return false;
         }
         else if (this->isNotEnough()) {
-            std::cout << ERR "ERROR : Il manque des informations." NC << std::endl;
+            std::cerr << ERR "ERROR : Il manque des informations." NC << std::endl;
             return false;
         }
         return true;
@@ -369,9 +379,11 @@ class AFD {
 };
 
 namespace AFD_fx {
-    //* loads an afd from a file into memory / afd object
-    //* @param __file_name : the name of the file to load
-    //* @return the loaded afd if the file is valid, an empty afd with an initial state equal to -2 if the file requested failed to open, or -1 if afd stored in the file is flawed otherwise
+    /**
+    /* @brief loads an afd from a file into memory / afd object
+    /* @param __file_name the name of the file to load
+    /* @return the loaded afd if the file is valid, an empty afd with an initial state equal to -2 if the file requested failed to open, or -1 if afd stored in the file is flawed otherwise
+    */
     template <typename T>
     inline AFD read(const T& __file_name) {
         AFD afd; //* afd to load
@@ -398,13 +410,13 @@ namespace AFD_fx {
         }
         std::cout << GRN "SUCCESS : Fichier ouvert avec succes." NC << std::endl;
         std::string line;
-        int state;
+        int state, count = 0;
         char symbol, id;
         int nextState;
         std::vector<char> alphabet;
-        int count = 1;
         while (getline(file, line)) { //* reads each line of the file
             line.erase(line.find_last_not_of(" \n\r\t") + 1); //* removes trailing whitespaces
+            count++;
             if (line.empty() || line[0] == '#') { //* skips empty lines and comments
                 continue;
             }
@@ -462,7 +474,6 @@ namespace AFD_fx {
                     std::cout <<  ERR "Erreur de syntax : " << count << " - ligne non reconnue" NC << std::endl;
                     return afd.setInitialState(-1);
             }
-            count++;
         }
         file.close();
         return afd; //* return the loaded afd
@@ -477,12 +488,9 @@ namespace AFD_fx {
     }
     template <typename T>
     inline std::string mirror(const T& __input) {
-        const std::string input(__input);
-        std::string output;
-        for (int i = input.size() - 1; i >= 0; i--) {
-            output += input[i];
-        }
-        return output;
+        std::string input(__input);
+        std::reverse(input.begin(), input.end());
+        return input;
     }
     template <typename T>
     inline bool isPalindrome(const T& __input) {
