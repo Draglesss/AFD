@@ -2,11 +2,13 @@
 #include <string>
 #pragma once
 
- //* @param state : state to check
- //* @param symbol : symbol to check
- //* @param nextState : next state to check
-//* @return true if state is accessible, false otherwise
-//* @brief check if state is accessible
+ /** 
+  * @param state state
+  / @param symbol symbol
+  / @param nextState next state
+  / @return true if state is accessible, false otherwise
+  / @brief check if state is accessible
+ */
 class transition {
     int state;
     char symbol;

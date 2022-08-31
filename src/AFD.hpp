@@ -60,7 +60,7 @@ class AFD {
     std::vector<int> states;
     public :
     inline AFD() {
-        initialState = -2;
+        initialState = -2; //* marking the afd as empty to be flagged in isEmpty()
     }
     inline AFD(const AFD& afd) {
         this->initialState = afd.initialState;
