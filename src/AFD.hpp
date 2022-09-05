@@ -24,12 +24,12 @@ namespace output { //* decorative output functions for console
         for(int i = 0; i < n; i++) {
             std::cout << "-";
         }
-        std::cout << endl;
+        std::cout << '\n';
     }
     void printInTable(const std::vector<string> str, const std::vector<string> value) {
         for(int i = 0; i < str.size(); i++) {
             std::cout << std::setprecision(0) << std::setw(colWidth) << value[i] << std::setprecision(4) << 
-            std::setw(colWidth)<< str[i] << std::endl;
+            std::setw(colWidth)<< str[i] << '\n';
             std::cout << std::setprecision(0) << std::setw(16);
             printSpacing(50);
         }
@@ -124,11 +124,6 @@ class AFD {
             return t.getState() == state && t.getSymbol() == symbol;
         }) != transitions.end();
     }
-    private : bool checkTransitions(const transition& t) const {
-        return std::find_if(transitions.begin(), transitions.end(), [&t](const transition& t2) {
-            return t.getState() == t2.getState() && t.getSymbol() == t2.getSymbol();
-        }) != transitions.end();
-    }
     public :
     /**
      * @brief add a transition to the transitions vector and sort it
@@ -136,8 +131,9 @@ class AFD {
      * @return the current AFD object by reference
      */
     inline AFD& addTransition(const transition& t) {
-        if(checkTransitions(t)) {
-            cout << "Transition t("<< t.getState() << ", " << t.getSymbol() <<") already exists" << endl;
+        if(isValidTransition(t))
+        {
+            cout << "Transition t("<< t.getState() << ", " << t.getSymbol() <<") already exists" << '\n';
             return *this;
         }
         transitions.push_back(t);
@@ -170,7 +166,8 @@ class AFD {
         return *this;
     }
     inline AFD& addState(const int state) {
-        if (!isValidState(state)) {
+        if (!isValidState(state)) 
+        {
             states.push_back(state);
             std::sort(states.begin(), states.end());
         }
@@ -197,59 +194,59 @@ class AFD {
     }
     inline void printTransitions() const {
         if(transitions.size() == 0) {
-            std::cout << "t = ( EMPTY )" << std::endl;
+            std::cout << "t = ( EMPTY )" << '\n';
             return;
         }
         for (int i = 0; i < transitions.size(); i++) {
             std::cout << "t"<< i+1 << "("<< transitions[i].getState() << ", " << transitions[i].getSymbol() << ") = " 
-            << transitions[i].getNextState() << std::endl;
+            << transitions[i].getNextState() << '\n';
         }
     }
     inline void printAlphabet() const {
         cout << "A = {";
         if(alphabet.size() == 0)
-            std::cout << " EMPTY }" << std::endl;
+            std::cout << " EMPTY }" << '\n';
         for (int i = 0; i < alphabet.size(); i++) {
             std::cout << alphabet[i];
             if (i != alphabet.size() - 1)
                 std::cout << ", ";
             else
-                std::cout << "}" << std::endl;
+                std::cout << "}" << '\n';
         }
     }
     inline void printFinalStates() const {
         std::cout << "F = {";
         if(finalStates.size() == 0)
-            std::cout << " EMPTY }" << std::endl;
+            std::cout << " EMPTY }" << '\n';
         for (int i = 0; i < finalStates.size(); i++) {
             std::cout << finalStates[i];
             if (i != finalStates.size() - 1)
                 std::cout << ", ";
             else
-                std::cout << "}" << std::endl;
+                std::cout << "}" << '\n';
         }
     }
     inline void printStates() const {
         std::cout << "E = {";
         if (states.size() == 0)
-            std::cout << " EMPTY }" << std::endl;
+            std::cout << " EMPTY }" << '\n';
         for (auto& state : states) {
             std::cout << state;
             if (state != states.back())
                 std::cout << ", ";
             else
-                std::cout << "}" << std::endl;
+                std::cout << "}" << '\n';
         }
     }
     inline void printInitialState() const {
         if (initialState == -2) 
-            std::cout << "I = { EMPTY } (-2)" << std::endl;
+            std::cout << "I = { EMPTY } (-2)" << '\n';
         else
-            std::cout << "I = {" << initialState << "}" << std::endl;
+            std::cout << "I = {" << initialState << "}" << '\n';
     }
     inline void print(const string& nom = "") const { //* print the afd with an optional name
         using namespace output;
-        if(nom != "") std::cout << "AFD : " << nom << std::endl;
+        if(nom != "") std::cout << "AFD : " << nom << '\n';
         printInitialState();
         printSpacing();
         printAlphabet();
@@ -277,7 +274,7 @@ class AFD {
         int currentState = initialState;
         for (size_t i = 0; i < input.size(); i++) {
             if(!isValidSymbol(input[i])) {
-                cerr << CAU << input[i] << " is an invalid symbol"  << NC << endl;
+                cerr << CAU << input[i] << " is an invalid symbol"  << NC << '\n';
                 return false;
             }
             for (size_t j = 0; j < transitions.size(); j++) {
@@ -288,9 +285,9 @@ class AFD {
                     else
                         cout << "(" << currentState << ") -- " << input[i] << " --> ";
                     if (isFinalState(transitions[j].getNextState())) {
-                        std::cout << GRN "((" << transitions[j].getNextState() << "))" NC << std::endl;
+                        std::cout << GRN "((" << transitions[j].getNextState() << "))" NC << '\n';
                     } else {
-                        std::cout << transitions[j].getNextState() << std::endl;
+                        std::cout << transitions[j].getNextState() << '\n';
                     }
                     currentState = transitions[j].getNextState();
                     break;
@@ -299,8 +296,10 @@ class AFD {
         }
         //auto end = clock.now();
         //auto time_span = static_cast<chrono::duration<double>>(end - start);
-        //cout << "Operation took: " << time_span.count() << " seconds !!!" << endl;
+        //cout << "Operation took: " << time_span.count() << " seconds !!!" << '\n';
+
         return isFinalState(currentState);
+        
         //* accept() raw
         //* bool accept(const T& input) const {
         //* const string inp(input);
@@ -330,15 +329,18 @@ class AFD {
     }
     inline bool isHealthy() const {
         if (this->isCorrupted()) {
-            std::cerr << ERR "ERROR : Syntax error." NC << std::endl;
+            //* corrupted afd meaning that the file reading was unsuccessful
+            std::cerr << ERR "ERROR : Syntax error." NC << '\n';
             return false;
         }
         else if (this->isEmpty()) {
-            std::cerr << ERR "ERROR : L'automate est vide." NC << std::endl;
+            //* empty afd
+            std::cerr << ERR "ERROR : L'automate est vide." NC << '\n';
             return false;
         }
         else if (this->isNotEnough()) {
-            std::cerr << ERR "ERROR : Il manque des informations." NC << std::endl;
+            //* more info is needed
+            std::cerr << ERR "ERROR : Il manque des informations." NC << '\n';
             return false;
         }
         return true;
@@ -355,7 +357,7 @@ class AFD {
     inline void Try(const T& __input)  const {
         std::string input(__input);
         output::printSpacing();
-        std::cout << "Le mot " << input << " : \n" << (accept(input) ? GRN "=> accepte" NC : ERR "=> refuse" NC )  << std::endl;
+        std::cout << "Le mot " << input << " : \n" << (accept(input) ? GRN "=> accepte" NC : ERR "=> refuse" NC )  << '\n';
     }
     inline bool isValidInput(const std::string& input) const {
         for (int i = 0; i < input.size(); i++) {
@@ -392,38 +394,36 @@ namespace AFD_fx {
         const std::string ext = __file.substr(__file.find_last_of(".") + 1); //* file extension
         if (!std::regex_match(ext, std::regex("(afd)|(txt)", std::regex_constants::icase))) 
         {
-            std::cerr << ERR "ERROR : Le fichier n'est pas un fichier TXT ou AFD." NC << std::endl;
-            std::cerr << caution_message << std::endl;
+            std::cerr << ERR "ERROR : Le fichier n'est pas un fichier TXT ou AFD." NC << '\n';
+            std::cerr << caution_message << '\n';
             return afd.setInitialState(-2);
         }
         ifstream file(__file); //* pointer to / opens the file so no need for .open()
-        if (!file) {
-            std::cerr << ERR "ERROR : Le fichier " + __file + " n'existe pas." NC << std::endl;
-            std::cerr << caution_message << std::endl;
+        if (!file) { //* checking for file existence
+            std::cerr << ERR "ERROR : Le fichier " + __file + " n'existe pas." NC << '\n';
+            std::cerr << caution_message << '\n';
             return afd.setInitialState(-2);
         }
-        std::cout << "--------------------- Reading " << __file << " ---------------------" << std::endl;
-        if (!file.is_open()) {
-            std::cerr << ERR "ERROR : Erreur lors de l'ouverture du fichier." NC << std::endl;
-            std::cerr << caution_message << std::endl;
+        std::cout << "--------------------- Reading " << __file << " ---------------------" << '\n';
+        if (!file.is_open()) { //* error checking for file opening
+            std::cerr << ERR "ERROR : Erreur lors de l'ouverture du fichier." NC << '\n';
+            std::cerr << caution_message << '\n';
             return afd.setInitialState(-2); //* return an empty afd
         }
-        std::cout << GRN "SUCCESS : Fichier ouvert avec succes." NC << std::endl;
+        std::cout << GRN "SUCCESS : Fichier ouvert avec succes." NC << '\n';
         std::string line;
         int state, count = 0;
         char symbol, id;
         int nextState;
-        std::vector<char> alphabet;
         while (getline(file, line)) { //* reads each line of the file
             line.erase(line.find_last_not_of(" \n\r\t") + 1); //* removes trailing whitespaces
             count++;
-            if (line.empty() || line[0] == '#') { //* skips empty lines and comments
+            if (line.empty() || line[0] == '#') //* skips empty lines and comments
                 continue;
-            }
             switch (line[0]) { //* checks the first character of the line
                 case 'I' : //* initial state
                     if (isalpha(line[2])) {
-                        std::cout << ERR "Erreur de syntax : " << count << " - l'etat initial (I)." NC << std::endl;
+                        std::cout << ERR "Erreur de syntax : " << count << " - l'etat initial (I)." NC << '\n';
                         return afd.setInitialState(-1); //* return a corrupted afd
                     }
                     state = stoi(line.substr(2, line.size() - 2));
@@ -432,17 +432,16 @@ namespace AFD_fx {
                 case 'A' : //* alphabet
                     for (int i = 2; i < line.size(); i = i + 2) {
                         if (!isalpha(line[i])) {
-                                std::cout << ERR "Erreur de syntax : " << count << " - l'alphabet (A)." NC << std::endl;
+                                std::cout << ERR "Erreur de syntax : " << count << " - l'alphabet (A)." NC << '\n';
                                 return afd.setInitialState(-1);
                             }
-                        alphabet.push_back(line[i]);
+                        afd.addAlphabet(line[i]);
                     }
-                    afd.addAlphabet(alphabet);
                     break;
                 case 'F' : //* final states
                     for (int i = 2; i < line.size(); i = i + 2) {
                             if (isalpha(line[i])) {
-                                std::cout << ERR "Erreur de syntax : " << count << " - les états finaux (F)." NC << std::endl;
+                                std::cout << ERR "Erreur de syntax : " << count << " - les etats finaux (F)." NC << '\n';
                                 return afd.setInitialState(-1);
                             }
                             state = stoi(line.substr(i, 1));
@@ -452,7 +451,7 @@ namespace AFD_fx {
                 case 'E' : //* states line
                     for (int i = 2; i < line.size(); i = i + 2) {
                             if (isalpha(line[i])) {
-                                std::cout << ERR "Erreur de syntax : " << count << " - les états (E)." NC << std::endl;
+                                std::cout << ERR "Erreur de syntax : " << count << " - les états (E)." NC << '\n';
                                 return afd.setInitialState(-1);
                             }
                             state = stoi(line.substr(i, 1));
@@ -467,11 +466,11 @@ namespace AFD_fx {
                     afd.addTransition(transition(state, symbol, nextState));
                     break;
                     } catch (exception& e) {
-                        std::cout << ERR "Erreur de syntax : " << count << " - la transition (t)." NC << std::endl;
+                        std::cout << ERR "Erreur de syntax : " << count << " - la transition (t)." NC << '\n';
                         return afd.setInitialState(-1);
                     }
                 default :
-                    std::cout <<  ERR "Erreur de syntax : " << count << " - ligne non reconnue" NC << std::endl;
+                    std::cout <<  ERR "Erreur de syntax : " << count << " - ligne non reconnue" NC << '\n';
                     return afd.setInitialState(-1);
             }
         }

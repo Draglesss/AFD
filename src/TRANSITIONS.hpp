@@ -3,11 +3,9 @@
 #pragma once
 
  /** 
-  * @param state state
-  / @param symbol symbol
-  / @param nextState next state
-  / @return true if state is accessible, false otherwise
-  / @brief check if state is accessible
+  * @param state The current state of the FSM
+  / @param symbol The symbol to be read
+  / @param nextState The next state of the FSM
  */
 class transition {
     int state;

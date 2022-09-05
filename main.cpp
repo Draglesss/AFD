@@ -8,7 +8,7 @@ int main() {
     std::cout << "Veuillez entrer le nom du fichier a utiliser : ";
     std::cin >> fileName;
     const AFD afd(read(fileName));
-    const AFD test_afd(read("test_automate.afd"));
+    // const AFD test_afd(read("test.test.afd"));
     /* try {
      AFD *__afd = new AFD(read("automate_EX5.afd"));
         __afd->print();
