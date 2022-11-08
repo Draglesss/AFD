@@ -1,3 +1,11 @@
+
+/*
+* this file is test for the AFD library
+* it is a simple example of how to use the library
+* it is not a complete program
+*/
+
+
 using namespace std;
 #include "./src/AFD.hpp"
 using namespace AFD_fx;
@@ -25,9 +33,11 @@ int main() {
     afd.Try("bbbabb");
     afd.Try("bababa");
     afd.Try("abbbbbbbbababbb");
+    afd.getTransition(1, 'a', 1).print().setNextState(2).print();
+    afd.getTransition(transition(1, 'a', 1)).print();
     std::cout << mirror("test") << std::endl;
     std::cout << "Le mot " << mot << " est " << (AFD_fx::isPalindrome(mot) ? "" : "pas ") << "un palindrome" << std::endl;
-    afd.consoleInput();
+    afd.consoleInput(); 
     afd << "afd";
     afd.isAccessibleState(1) ? std::cout << "accessible" << std::endl : std::cout << "not accessible" << endl;
     return 0;

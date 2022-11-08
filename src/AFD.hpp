@@ -177,6 +177,17 @@ class AFD {
         std::sort(finalStates.begin(), finalStates.end());
         return *this;
     }
+    inline transition getTransition(const int state, const char symbol, const int nextstate) const {
+        for(int i = 0; i < transitions.size(); i++) {
+            if(transitions[i].getState() == state && transitions[i].getSymbol() == symbol && transitions[i].getNextState() == nextstate) {
+                return transitions[i];
+            }
+        }
+        return transition(-1, -1, ' ');
+    }
+    inline transition getTransition(const transition& t) const {
+        return getTransition(t.getState(), t.getSymbol(), t.getNextState());
+    }
     inline AFD& addState(const int state) {
         if (!isValidState(state)) 
         {

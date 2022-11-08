@@ -50,7 +50,8 @@ public:
         this->nextState = nextState;
         return *this;
     }
-    void print() const {
-        std::cout << "t" << "(" << this->state << "," << this->symbol << "," << this->nextState << ")" << std::endl;
+    transition print() const {
+        std::cout << *this << std::endl;
+        return *this;
     }
 };
