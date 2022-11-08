@@ -1,5 +1,5 @@
 using namespace std;
-#include "./src/AFD.hpp" //! inclusion must be after the use of std namespace
+#include "./src/AFD.hpp"
 using namespace AFD_fx;
 
 int main() {
@@ -17,7 +17,7 @@ int main() {
     catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     } */
-    if(!afd.isHealthy()) 
+    if(!afd.isHealthy())
         return 0;
     afd.print("AFD EX5");
     const std::string mot = "abba";
@@ -28,7 +28,7 @@ int main() {
     std::cout << mirror("test") << std::endl;
     std::cout << "Le mot " << mot << " est " << (AFD_fx::isPalindrome(mot) ? "" : "pas ") << "un palindrome" << std::endl;
     afd.consoleInput();
-    std::cout << afd;
+    afd << "afd";
     afd.isAccessibleState(1) ? std::cout << "accessible" << std::endl : std::cout << "not accessible" << endl;
     return 0;
 }
