@@ -183,7 +183,7 @@ class AFD {
                 return transitions[i];
             }
         }
-        return transition(-1, -1, ' ');
+        return transition(-1, ' ', -1);
     }
     inline transition getTransition(const transition& t) const {
         return getTransition(t.getState(), t.getSymbol(), t.getNextState());
